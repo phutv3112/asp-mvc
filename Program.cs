@@ -1,8 +1,20 @@
+using AppMVC.Models;
+using AppMVC.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services.AddSingleton<PlanetService>();
+
+var connectString = builder.Configuration.GetValue<string>("ConnectionString:AppDbContext");
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(connectString);
+});
 
 var app = builder.Build();
 

@@ -1,0 +1,9 @@
+@inject AppMVC.Services.PlanetService planetService
+<h1>
+    Solar System</h1>
+<div class="list-group">
+    @foreach (var planet in planetService)
+    {
+        <a class="list-group-item" asp-action="@planet.Name">@planet.Name (@planet.VnName)</a>
+    }
+</div>

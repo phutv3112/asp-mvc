@@ -1,0 +1,11 @@
+$blue-background: #1f63c8;
+
+.form-group {
+    .control-label {
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background-color: $blue-background;
+    }
+}
