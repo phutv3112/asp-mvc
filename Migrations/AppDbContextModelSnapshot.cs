@@ -51,7 +51,7 @@ namespace AppMVC.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contacts");
+                    b.ToTable("Contacts", (string)null);
                 });
 #pragma warning restore 612, 618
         }
