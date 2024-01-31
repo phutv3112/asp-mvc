@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AppMVC.Models;
-using ContactModel = AppMVC.Models.Contacts.Contact;
+using App.Models;
+using ContactModel = App.Models.Contacts.Contact;
 using Microsoft.AspNetCore.Authorization;
 
-namespace AppMVC.Areas.Contact.Controllers
+namespace App.Areas.Contact.Controllers
 {
     [Area("Contact")]
     public class ContactController : Controller

@@ -1,6 +1,6 @@
-using AppMVC.Models;
+using App.Models;
 
-namespace AppMVC.Services
+namespace App.Services
 {
     public class PlanetService : List<PlanetModel>
     {

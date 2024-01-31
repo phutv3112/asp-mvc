@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace AppMVC.Migrations
+namespace App.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration

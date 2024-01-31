@@ -1,10 +1,10 @@
-using AppMVC.Models.Contacts;
+using App.Models.Contacts;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace AppMVC.Models
+namespace App.Models
 {
-    //AppMVC.Models.AppDbContext
+    //App.Models.AppDbContext
     public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)

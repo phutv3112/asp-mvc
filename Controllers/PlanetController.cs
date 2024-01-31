@@ -1,7 +1,7 @@
-using AppMVC.Services;
+using App.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppMVC.Controllers
+namespace App.Controllers
 {
     public class PlanetController : Controller
     {

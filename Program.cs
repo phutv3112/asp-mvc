@@ -1,5 +1,5 @@
-using AppMVC.Models;
-using AppMVC.Services;
+using App.Models;
+using App.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -59,10 +59,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/access-denied";
 });
 
-// builder.Services.AddOptions();
-// var mailsettings = builder.Configuration.GetSection("MailSettings");  // đọc config
-// builder.Services.Configure<MailSettings>(mailsettings);
-// builder.Services.AddSingleton<IEmailSender, SendMailService>();
+builder.Services.AddOptions();
+var mailsettings = builder.Configuration.GetSection("MailSettings");  // đọc config
+builder.Services.Configure<MailSettings>(mailsettings);
+builder.Services.AddSingleton<IEmailSender, SendMailService>();
+
+builder.Services.AddSingleton<IdentityErrorDescriber, AppIdentityErrorDescriber>();
 
 builder.Services.AddAuthentication()
 .AddGoogle(options =>

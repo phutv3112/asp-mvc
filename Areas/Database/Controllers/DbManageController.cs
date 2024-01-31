@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppMVC.Controllers
+namespace App.Controllers
 {
     public class DbManageController : Controller
     {

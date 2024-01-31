@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AppMVC.Models.Contacts
+namespace App.Models.Contacts
 {
     public class Contact
     {

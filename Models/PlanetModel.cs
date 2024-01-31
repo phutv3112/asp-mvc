@@ -1,4 +1,4 @@
-namespace AppMVC.Models
+namespace App.Models
 {
     public class PlanetModel
     {
