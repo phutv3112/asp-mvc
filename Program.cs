@@ -1,7 +1,12 @@
 using AppMVC.Models;
 using AppMVC.Services;
+using System.Configuration;
+using AppMVC.Security.Requirements;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 // var connectionString = builder.Configuration.GetConnectionString("AppDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AppDbContextConnection' not found.");
@@ -58,10 +63,26 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = "/logout";
     options.AccessDeniedPath = "/access-denied";
 });
-// builder.Services.AddOptions();
-// var mailsettings = builder.Configuration.GetSection("MailSettings");  // đọc config
-// builder.Services.Configure<MailSettings>(mailsettings);
-// builder.Services.AddSingleton<IEmailSender, SendMailService>();
+
+//Email service
+builder.Services.AddOptions();
+var mailSettings = builder.Configuration.GetSection("MailSettings");  // đọc config
+builder.Services.Configure<MailSettings>(mailSettings);
+builder.Services.AddSingleton<IEmailSender, SendMailService>();
+
+//Claims and Policy
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ViewManageMenu", policyBuilder =>
+    {
+        policyBuilder.RequireAuthenticatedUser(); // require Login
+        policyBuilder.RequireRole("Admin");
+    });
+});
+
+// Register App Authorization
+builder.Services.AddTransient<IAuthorizationHandler, AppAuthorizationHandler>();
+
 
 builder.Services.AddAuthentication()
 .AddGoogle(options =>

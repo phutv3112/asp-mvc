@@ -1,0 +1,44 @@
+﻿@page "/admin/users"
+@model App.Admin.USer.IndexModel
+@{
+    ViewData["Title"] = "Roles";
+}
+<partial name="_StatusMessage" model="@Model.StatusMessage" />
+
+<table class="table">
+    <tr>
+        <th>User Name</th>
+        <th>Role</th>
+        <th>Action</th>
+    </tr>
+    @foreach (var user in Model.users)
+    {
+        <tr>
+            <td>@user.UserName</td>
+            <td>
+                @if (string.IsNullOrEmpty(user.RolesName))
+                {
+                    <a class="" asp-page="./AddRole" asp-route-id="@user.Id">+Add Role</a>
+                }
+                else
+                {
+                    <a class="text-dark" asp-page="./AddRole" asp-route-id="@user.Id">@user.RolesName</a>
+                }
+            </td>
+            <td>
+
+                <a class="btn btn-sm btn-success" asp-page="./SetPassword" asp-route-id="@user.Id">Set Password</a>
+            </td>
+        </tr>
+    }
+
+</table>
+@{
+    var pagingmodel = new AppMVC.Helpers.PagingModel()
+            {
+                currentPage = Model.currentPage,
+                countPages = Model.countPages,
+                generateUrl = (int? p) => Url.Page("./Index", new { p = p })
+            };
+}
+<partial name="_Paging" model="@pagingmodel" />

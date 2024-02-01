@@ -1,0 +1,37 @@
+﻿@page "/admin/roles"
+@model App.Admin.Role.IndexModel
+@{
+    ViewData["Title"] = "Roles";
+}
+<partial name="_StatusMessage" model="@Model.StatusMessage" />
+<div class="mb-2">
+    <a class="btn btn-primary" asp-page="./Create">Create new Role</a>
+    <a class="btn btn-primary" asp-page="../User/Index">Manage User Role</a>
+</div>
+<table class="table">
+    <tr>
+        <th>Role Name</th>
+        <th>Action</th>
+    </tr>
+    @foreach (var role in Model.roles)
+    {
+        <tr>
+            <td>
+                <p>@role.Name</p>
+                @foreach (var claim in role.Claims)
+                {
+                    <small>
+                        @claim
+                    </small>
+
+                    <br />
+                }
+            </td>
+            <td>
+                <a class="btn btn-sm btn-success" asp-page="./Edit" asp-route-roleid="@role.Id">Edit</a>
+                <a class="btn btn-sm btn-danger" asp-page="./Delete" asp-route-roleid="@role.Id">Delete</a>
+            </td>
+        </tr>
+    }
+
+</table>

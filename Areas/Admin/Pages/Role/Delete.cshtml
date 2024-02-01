@@ -1,0 +1,25 @@
+﻿@page "/admin/delete-role/{roleid}"
+@model App.Admin.Role.DeleteModel
+@{
+    ViewData["Title"] = "Roles";
+}
+<partial name="_StatusMessage" model="@Model.StatusMessage" />
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <p>Are you sure to delete @Model.role.Name role</p>
+            <div class="form-group mt-2 ">
+                <input type="submit" value="Delete" class="btn btn-danger" />
+                <a asp-page="./Index" class="btn btn-secondary">List Roles</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
