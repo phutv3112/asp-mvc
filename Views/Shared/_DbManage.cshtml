@@ -12,7 +12,7 @@
             Manager
         </a>
 
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu manage-dropdown">
             <li><a class="dropdown-item" asp-action="Index" asp-controller="DbManage" asp-area="Database">Manage
                     Database</a></li>
             <li><a class="dropdown-item" asp-action="Index" asp-controller="Contact" asp-area="Contact">Manage Contact</a>
@@ -20,6 +20,8 @@
             <li><a class="dropdown-item" asp-page="/User/Index" asp-area="Admin">Manage Users</a>
             <li><a class="dropdown-item" asp-controller="Category" asp-action="Index" asp-area="Blog">Manage Blog
                     Categories</a>
+            <li><a class="dropdown-item" asp-controller="Post" asp-action="Index" asp-area="Blog">Manage Blog
+                    Posts</a>
         </ul>
     </div>
 }

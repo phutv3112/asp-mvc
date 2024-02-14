@@ -118,6 +118,10 @@ app.UseAuthentication(); // xac dinh danh tinh
 app.UseAuthorization(); // xac thuc quyen truy cap
 
 app.MapControllerRoute(
+    name: "MyArea",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 

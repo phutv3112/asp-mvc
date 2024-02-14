@@ -30,3 +30,7 @@ body {
 .form-group .btn-primary {
   background-color: #1f63c8;
 }
+.manage-dropdown{
+  right: 10%;
+  left:unset !important;
+}
