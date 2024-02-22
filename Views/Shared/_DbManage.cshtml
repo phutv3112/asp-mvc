@@ -16,12 +16,18 @@
             <li><a class="dropdown-item" asp-action="Index" asp-controller="DbManage" asp-area="Database">Manage
                     Database</a></li>
             <li><a class="dropdown-item" asp-action="Index" asp-controller="Contact" asp-area="Contact">Manage Contact</a>
+            </li>
             <li><a class="dropdown-item" asp-page="/Role/Index" asp-area="Admin">Manage Roles</a>
+            </li>
             <li><a class="dropdown-item" asp-page="/User/Index" asp-area="Admin">Manage Users</a>
+            </li>
             <li><a class="dropdown-item" asp-controller="Category" asp-action="Index" asp-area="Blog">Manage Blog
-                    Categories</a>
+                    Categories</a></li>
             <li><a class="dropdown-item" asp-controller="Post" asp-action="Index" asp-area="Blog">Manage Blog
-                    Posts</a>
+                    Posts</a></li>
+            <li><a target="_blank" class="dropdown-item" asp-controller="FileManager" asp-action="Index"
+                    asp-area="Files">Manage Files</a>
+            </li>
         </ul>
     </div>
 }

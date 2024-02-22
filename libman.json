@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library":"summernote@0.8.18",
+      "destination":"wwwroot/lib/summernote"
+    },
+    {
+      "library":"jqueryui@1.12.1",
+      "destination":"wwwroot/lib/jqueryui"
+    },
+    {
+      "library":"elfinder@2.1.57",
+      "destination":"wwwroot/lib/elfinder"
+    },
+    {
+      "library":"multiple-select@1.2.3",
+      "destination":"wwwroot/lib/multiple-select"
+    }
+  ]
+}

@@ -41,3 +41,8 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+@{
+    var summernote = new AppMVC.Models.Summernote("#Content");
+}
+<partial name="_Summernote" model="summernote" />
