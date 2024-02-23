@@ -179,7 +179,7 @@ namespace AppMVC.Areas.Blog.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Title,Description,Slug,Content,Published,CategoriesIDs")] CreatePostModel post)
+        public async Task<IActionResult> Edit(int id, [Bind("PostId,Title,Description,Slug,Content,Published,CategoriesIDs")] CreatePostModel post)
         {
             if (id != post.PostId)
             {

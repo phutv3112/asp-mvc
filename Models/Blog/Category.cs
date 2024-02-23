@@ -22,5 +22,30 @@ namespace AppMVC.Models.Blog
         public ICollection<Category> CategoryChildren { set; get; }
         [ForeignKey("ParentId")]
         public Category CategoryParent { set; get; }
+
+        public void ChildrenCategoryIDs(ICollection<Category> childrencates, List<int> list)
+        {
+            if (childrencates == null)
+            {
+                childrencates = this.CategoryChildren;
+            }
+            foreach (Category cate in childrencates)
+            {
+                list.Add(cate.Id);
+                ChildrenCategoryIDs(cate.CategoryChildren, list);
+            }
+        }
+        public List<Category> ListParents()
+        {
+            List<Category> list = new List<Category>();
+            var parent = this.CategoryParent;
+            while (parent != null)
+            {
+                list.Add(parent);
+                parent = parent.CategoryParent;
+            }
+            list.Reverse();
+            return list;
+        }
     }
 }

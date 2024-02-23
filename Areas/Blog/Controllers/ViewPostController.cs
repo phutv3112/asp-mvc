@@ -1,3 +1,4 @@
+using AppMVC.Helpers;
 using AppMVC.Models;
 using AppMVC.Models.Blog;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace AppMVC.Areas.Blog.Controllers
 
         // GET: ViewPostController
         [Route("/post/{categoryslug?}")]
-        public ActionResult Index(string categoryslug, int page)
+        public ActionResult Index(string categoryslug, [FromQuery(Name = "p")] int currentPage, int pageSize)
         {
             var categories = GetCategories();
             ViewBag.categories = categories;
@@ -40,13 +41,68 @@ namespace AppMVC.Areas.Blog.Controllers
                                     .ThenInclude(p => p.Category)
                                     .AsQueryable();
             posts.OrderByDescending(p => p.DateUpdated);
+
+            if (category != null)
+            {
+                var ids = new List<int>();
+                category.ChildrenCategoryIDs(null, ids);
+                ids.Add(category.Id);
+
+                posts = posts.Where(p => p.PostCategories.Where(pc => ids.Contains(pc.CategoryId)).Any());
+            }
+
+            int totalPost = posts.Count();
+            if (pageSize <= 0) pageSize = 10;
+            int countPage = (int)Math.Ceiling((double)totalPost / pageSize);
+
+            if (currentPage > countPage) currentPage = countPage;
+            if (currentPage < 1) currentPage = 1;
+
+            var pagingModel = new PagingModel()
+            {
+                countPages = countPage,
+                currentPage = currentPage,
+                generateUrl = (pageNumber) => Url.Action("Index", new
+                {
+                    p = pageNumber,
+                    pagesize = pageSize
+                })
+            };
+
+            var postInPage = posts.Skip((currentPage - 1) * pageSize)
+                           .Take(pageSize);
+
+            ViewBag.pagingModel = pagingModel;
+            ViewBag.totalPost = totalPost;
+
             ViewBag.category = category;
-            return View(posts.ToList());
+            return View(postInPage.ToList());
         }
         [Route("/post/{postslug}.html")]
         public IActionResult Detail(string postslug)
         {
-            return View();
+            var categories = GetCategories();
+            ViewBag.categories = categories;
+
+            var post = _context.Posts.Where(p => p.Slug == postslug)
+                            .Include(p => p.Author)
+                            .Include(p => p.PostCategories)
+                            .ThenInclude(pc => pc.Category)
+                            .FirstOrDefault();
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            Category category = post.PostCategories.FirstOrDefault()?.Category;
+            ViewBag.category = category;
+
+            var otherPosts = _context.Posts.Where(p => p.PostCategories.Any(c => c.Category.Id == category.Id))
+                                    .Where(p => p.PostId != post.PostId)
+                                    .OrderByDescending(p => p.DateUpdated)
+                                    .Take(5);
+            ViewBag.otherPosts = otherPosts;
+            return View(post);
         }
         private List<Category> GetCategories()
         {
