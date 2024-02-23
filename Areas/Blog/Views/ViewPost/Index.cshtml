@@ -1,0 +1,46 @@
+@model List<Post>
+@using AppMVC.Components;
+@{
+    List<Category> categories = ViewBag.categories as List<Category>;
+    Category category = ViewBag.category as Category;
+    ViewData["Title"] = (category != null) ? category.Title : "Post in Categories";
+}
+<h2>@ViewData["Title"]</h2>
+@if (category != null)
+{
+    <p>@category.Content</p>
+}
+else
+{
+    <p>All Post in Categories</p>
+}
+<hr />
+@foreach (var post in Model)
+{
+    <div class="container mt-3">
+        <div class="d-flex border p-3">
+            <img src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png" alt="John Doe"
+                class="flex-shrink-0 me-3 mt-3 rounded-circle" style="width:60px;height:60px;">
+            <div>
+                <h4>
+                    <a asp-controller="ViewPost" asp-action="Detail" asp-route-postslug="@post.Slug">@post.Title</a>
+                </h4>
+                <p>@post.Description</p>
+                <div class="author-row">
+                    Author: <strong>@post.Author.UserName</strong> |
+                    Date: <i>@post.DateUpdated.ToShortDateString()</i>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Sidebar {
+    @await Component.InvokeAsync("AppMVC.Components.CategorySidebar",
+        new CategorySidebar.CategorySidebarData()
+{
+    Categories = categories,
+    level = 0,
+    categoryslug = ViewBag.categoryslug
+})
+}
