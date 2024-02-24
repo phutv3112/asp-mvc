@@ -1,0 +1,171 @@
+@* @model AppMVC.Models.Blog.Post *@
+@model AppMVC.Areas.Product.Models.CreateProductModel
+
+@{
+    ViewData["Title"] = "Edit";
+    var list = ViewData["categories"] as MultiSelectList;
+}
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-controller="ProductManager" asp-action="Edit">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input asp-for="ProductId">
+            <div class="form-group">
+                <label asp-for="CategoriesIDs" class="control-label"></label>
+                <select asp-items="list" multiple="multiple" asp-for="CategoriesIDs" class="form-control"> </select>
+                <span asp-validation-for="CategoriesIDs" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <hr>
+            <input class="collapse" type="file" id="selectfileupload" onchange="AutoUploadPhoto()" />
+            <span class="btn btn-primary" onclick="ClickButtoUpload()">Uploads</span>
+
+            <div id="box-photo-upload" class="d-flex flex-wrap photo-upload" data-id="@Model.ProductId"></div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Slug" class="control-label"></label>
+                <input asp-for="Slug" class="form-control" />
+                <span asp-validation-for="Slug" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea rows="5" asp-for="Content" class="form-control"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Published" /> @Html.DisplayNameFor(model =>
+                    model.Published)
+                </label>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Update" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+@section Scripts {
+    <script src="~/lib/multiple-select/multiple-select.min.js"></script>
+    <link rel="stylesheet" href="~/lib/multiple-select/multiple-select.min.css" />
+    <script>
+        $("#id - select - roles").multipleSelect({
+            selectAll: false,
+            keepOpen: false,
+            isOpen: false
+        });
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function AutoUploadPhoto() {
+            var formData = new FormData();
+
+            var id = $("#box-photo-upload").data("id");
+            formData.append("id", id);
+
+            var sofile = document.getElementById("selectfileupload").files.length;
+            if (sofile == 0) return;
+            var fileData = document.getElementById("selectfileupload").files[0];
+            formData.append("FileUpload", fileData)
+
+
+            var urlUpload = "@Url.Action("UploadPhotoApi")";
+
+            $.ajax({
+                data: formData,
+                cache: false,
+                url: urlUpload,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    // ... xu ly du lieu lay duoc
+                    LoadPhotos();
+                }
+            });
+
+        }
+
+        function ClickButtoUpload() {
+            $("#selectfileupload").click();
+        }
+        function handleDeletePhoto() {
+            $("#box-photo-upload .photodetail span").click(function () {
+                var spanButton = $(this)
+                var id = spanButton.data("id");
+
+                var formData = new FormData();
+                formData.append("id", id);
+
+                var urlDeletePhoto = "@Url.Action("DeletePhoto")";
+                $.ajax({
+                    data: formData,
+                    cache: false,
+                    url: urlDeletePhoto,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        LoadPhotos();
+                    }
+                })
+            })
+        }
+        function LoadPhotos() {
+            var box = $("#box-photo-upload");
+            var productId = box.data("id");
+            box.empty();
+
+            var formData = new FormData();
+            formData.append("id", productId);
+
+            var urlListPhoto = "@Url.Action("ListPhotos")";
+            $.ajax({
+                data: formData,
+                cache: false,
+                url: urlListPhoto,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    data.photos.forEach(function (item) {
+                        var e = $(
+                            '<div class="photodetail w-25 p-1">'
+                            + '<img class="w-100" src="' + item.path + '" />'
+                            + '<span class="btn btn-sm btn-danger" data-id="' + item.id + '">Delete</span></div>');
+                        box.append(e);
+                    })
+                    handleDeletePhoto()
+                }
+            })
+        }
+        $(document).ready(function () {
+            LoadPhotos();
+        })
+    </script>
+}
+
+@{
+    var summernote = new AppMVC.Models.Summernote("#Content");
+}
+<partial name="_Summernote" model="summernote" />

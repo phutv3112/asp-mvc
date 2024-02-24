@@ -1,5 +1,6 @@
 using AppMVC.Models.Blog;
 using AppMVC.Models.Contacts;
+using AppMVC.Models.Product;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,12 +40,29 @@ namespace AppMVC.Models
             modelBuilder.Entity<PostCategory>(entity =>
             {
                 entity.HasKey(p => new { p.PostId, p.CategoryId });
-            }); ;
+            });
+
+            modelBuilder.Entity<CategoryProduct>(entity =>
+            {
+                entity.HasIndex(c => c.Slug).IsUnique();
+            });
+            modelBuilder.Entity<ProductModel>(entity =>
+            {
+                entity.HasIndex(p => p.Slug).IsUnique();
+            });
+            modelBuilder.Entity<ProductCategory>(entity =>
+            {
+                entity.HasKey(p => new { p.ProductId, p.CategoryId });
+            });
 
         }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostCategory> PostCategory { get; set; }
+        public DbSet<ProductModel> Products { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
+        public DbSet<CategoryProduct> CategoryProducts { get; set; }
+        public DbSet<ProductPhoto> ProductPhotos { get; set; }
     }
 }
