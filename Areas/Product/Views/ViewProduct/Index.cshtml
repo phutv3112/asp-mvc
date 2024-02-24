@@ -1,0 +1,87 @@
+@model List<ProductModel>
+@using AppMVC.Components;
+@{
+    List<CategoryProduct> categories = ViewBag.categories as List<CategoryProduct>;
+    CategoryProduct category = ViewBag.category as CategoryProduct;
+    ViewData["Title"] = (category != null) ? category.Title : "Product in Categories";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="~/">Home</a></li>
+        @if (category != null)
+        {
+            var list = category.ListParents();
+            foreach (var item in list)
+            {
+                <li class="breadcrumb-item"><a asp-action="Index" asp-route-categoryslug="@item.Slug">@item.Title</a></li>
+            }
+        }
+    </ol>
+</nav>
+
+<h2>@ViewData["Title"]</h2>
+@if (category != null)
+{
+    <p>@category.Content</p>
+}
+else
+{
+    <p>All product in Categories</p>
+}
+<hr />
+<div class="d-flex flex-wrap justify-content-between">
+    @foreach (var product in Model)
+    {
+        var srcImg = "/contents/planet/Earth.jpg";
+        if (product.Photos.Any())
+        {
+            srcImg = $"/contents/Products/{product.Photos.FirstOrDefault().FileName}";
+        }
+        <div class="card mb-2" style="width: 32%;">
+            <img src=@srcImg class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">@product.Title</h5>
+                <p class="card-text">@product.Description</p>
+                <p>
+                    <strong>@product.ProductCategories.FirstOrDefault()?.Category.Title</strong>
+
+                </p>
+                <p>Price: @product.Price</p>
+                <div class="card-body">
+                    <a class="card-link" asp-action="Detail" asp-controller="ViewProduct"
+                        asp-route-productslug="@product.Slug">Detail</a>
+                    <a class="btn btn-sm btn-primary">Add to cart</a>
+                </div>
+            </div>
+        </div>
+        @* <div class="container mt-3">
+    <div class="d-flex border p-3">
+    <img src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png" alt="John Doe"
+    class="flex-shrink-0 me-3 mt-3 rounded-circle" style="width:60px;height:60px;">
+    <div>
+    <h4>
+    <a asp-controller="ViewProduct" asp-action="Detail"
+    asp-route-postslug="@product.Slug">@product.Title</a>
+    </h4>
+    <p>@product.Description</p>
+    <div class="author-row">
+    Author: <strong>@product.Author.UserName</strong> |
+    Date: <i>@product.DateUpdated.ToShortDateString()</i>
+    </div>
+    </div>
+    </div>
+    </div> *@
+    }
+</div>
+@section Sidebar {
+    @await Component.InvokeAsync("AppMVC.Components.CategoryProductSidebar",
+        new CategoryProductSidebar.CategorySidebarData()
+{
+    Categories = categories,
+    level = 0,
+    categoryslug = ViewBag.categoryslug
+})
+}
+
+<partial name="_Paging" model="@ViewBag.pagingModel" />

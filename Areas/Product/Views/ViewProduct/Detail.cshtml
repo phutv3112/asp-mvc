@@ -1,0 +1,68 @@
+@model ProductModel
+@using AppMVC.Components;
+@{
+    List<CategoryProduct> categories = ViewBag.categories as List<CategoryProduct>;
+    CategoryProduct category = ViewBag.category as CategoryProduct;
+    IQueryable<ProductModel> otherProducts = ViewBag.otherProducts as IQueryable<ProductModel>;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="~/">Home</a></li>
+        @if (category != null)
+        {
+            var list = category.ListParents();
+            foreach (var item in list)
+            {
+                <li class="breadcrumb-item"><a asp-action="Index" asp-route-productslug="@item.Slug">@item.Title</a></li>
+            }
+            <li class="breadcrumb-item"><a asp-action="Index" asp-route-productslug="@category.Slug">@category.Title</a>
+            </li>
+        }
+    </ol>
+</nav>
+
+<div class="detailpost">
+    <h2>@Model.Title</h2>
+    <div class="sapo">
+        @Model.Description
+    </div>
+    <div>
+        <i>Update: @Model.DateCreated</i> /
+        Author: <strong>@Model.Author.UserName</strong>
+    </div>
+    <p>Price: <strong>@Model.Price</strong></p>
+    <a class="btn btn-sm btn-primary" href="#">Add to cart</a>
+    <hr />
+    @Html.Raw(Model.Content)
+    @if (Model.Photos.Any())
+    {
+        foreach (var photo in Model.Photos)
+        {
+            <div class="d-flex flex-wrap">
+                <img class="w-50" src="/contents/Products/@photo.FileName" />
+            </div>
+        }
+    }
+</div>
+
+
+
+@section Sidebar {
+    @await Component.InvokeAsync("AppMVC.Components.CategoryProductSidebar",
+        new CategoryProductSidebar.CategorySidebarData()
+{
+    Categories = categories,
+    level = 0,
+    categoryslug = category.Slug
+})
+
+    <ul class="list-group">
+        @foreach (var product in otherProducts)
+        {
+            <li class="list-group-item">
+                <a asp-controller="ViewProduct" asp-action="Detail" asp-route-productslug="@product.Slug">@product.Title</a>
+            </li>
+        }
+    </ul>
+}
