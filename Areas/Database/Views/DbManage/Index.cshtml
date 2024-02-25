@@ -1,8 +1,12 @@
 @using Microsoft.EntityFrameworkCore
 @using System.Data
 @inject AppDbContext dbContext
+
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
 @{
     ViewData["Title"] = "Database";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
     var connect = dbContext.Database.GetDbConnection();
     var dbName = connect.Database;
     var can_connect = dbContext.Database.CanConnect();
@@ -16,3 +20,10 @@
     Post Category</a>
 <a class="btn btn-primary" asp-action="SeedProductCategory" asp-controller="DbManage" asp-area="Database">Seed
     Product Category</a>
+
+@{
+    _adminSidebarService.SetActive("DbManage", "Index", "Database");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

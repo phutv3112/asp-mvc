@@ -1,10 +1,12 @@
 @model AppMVC.Models.Contacts.Contact
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
 
 @{
     ViewData["Title"] = "Edit";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>Edit</h1>
 
 <h4>Contact</h4>
 <hr />
@@ -48,4 +50,9 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
+@{
+    _adminSidebarService.SetActive("Contact", "Index", "Contact");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

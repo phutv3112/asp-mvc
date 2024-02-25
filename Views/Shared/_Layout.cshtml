@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AppMVC</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AppMVC.styles.css" asp-append-version="true" />
 
@@ -49,6 +50,7 @@
                                 asp-action="SendContact">Contact</a>
                         </li>
                     </ul>
+
                     @await Html.PartialAsync("_CartPartial")
                     <partial name="_DbManage" />
                     <partial name="_LoginPartial" />

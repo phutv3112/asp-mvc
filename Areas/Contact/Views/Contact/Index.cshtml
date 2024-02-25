@@ -1,7 +1,9 @@
 @model IEnumerable<AppMVC.Models.Contacts.Contact>
-
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
 @{
     ViewData["Title"] = "Index";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h1>List Contact</h1>
@@ -48,3 +50,9 @@
         }
     </tbody>
 </table>
+@{
+    _adminSidebarService.SetActive("Contact", "Index", "Contact");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

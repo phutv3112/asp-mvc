@@ -1,0 +1,10 @@
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Admin Layout";
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}
