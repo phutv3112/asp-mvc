@@ -32,7 +32,8 @@
         Author: <strong>@Model.Author.UserName</strong>
     </div>
     <p>Price: <strong>@Model.Price</strong></p>
-    <a class="btn btn-sm btn-primary" href="#">Add to cart</a>
+    <a asp-action="AddToCart" asp-controller="ViewProduct" asp-route-productid="@Model.ProductId"
+        class="btn btn-sm btn-primary">Add to cart</a>
     <hr />
     @Html.Raw(Model.Content)
     @if (Model.Photos.Any())

@@ -24,6 +24,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+builder.Services.AddDistributedMemoryCache();     // Đăng ký dịch vụ lưu cache trong bộ nhớ (Session sẽ sử dụng nó)
+builder.Services.AddSession(cfg =>
+{             // Đăng ký dịch vụ Session
+    cfg.Cookie.Name = "appmvc";                 // Đặt tên Session - tên này sử dụng ở Browser (Cookie)
+    cfg.IdleTimeout = new TimeSpan(0, 30, 0);     // Thời gian tồn tại của Session
+});
+
 // builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
 
 // subscribe Identity
@@ -100,6 +107,8 @@ builder.Services.AddAuthentication()
     options.CallbackPath = "/fb-login";
 });
 
+builder.Services.AddTransient<CartService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -127,11 +136,14 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/StaticFiles"
 });
 
+//Session
+app.UseSession();
 
 app.UseRouting();
 
 app.UseAuthentication(); // xac dinh danh tinh
 app.UseAuthorization(); // xac thuc quyen truy cap
+
 
 app.MapControllerRoute(
     name: "MyArea",

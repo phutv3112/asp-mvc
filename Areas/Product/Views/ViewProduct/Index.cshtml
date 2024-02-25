@@ -51,7 +51,8 @@ else
                 <div class="card-body">
                     <a class="card-link" asp-action="Detail" asp-controller="ViewProduct"
                         asp-route-productslug="@product.Slug">Detail</a>
-                    <a class="btn btn-sm btn-primary">Add to cart</a>
+                    <a asp-action="AddToCart" asp-controller="ViewProduct" asp-route-productid="@product.ProductId"
+                        class="btn btn-sm btn-primary">Add to cart</a>
                 </div>
             </div>
         </div>
