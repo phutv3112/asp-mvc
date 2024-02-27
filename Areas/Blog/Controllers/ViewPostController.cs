@@ -1,12 +1,14 @@
 using AppMVC.Helpers;
 using AppMVC.Models;
 using AppMVC.Models.Blog;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppMVC.Areas.Blog.Controllers
 {
     [Area("Blog")]
+    [Authorize(Roles = "Admin")]
     public class ViewPostController : Controller
     {
         private readonly ILogger<ViewPostController> _logger;

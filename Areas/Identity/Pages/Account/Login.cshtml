@@ -44,53 +44,57 @@
                                 <button id="login-submit" type="submit" class="btn btn-primary btn-user btn-block">
                                     Login
                                 </button>
-
                                 <hr>
-                                @{
-                                    if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                                    {
-
-                                    }
-                                    else
-                                    {
-                                        <form id="external-account" asp-page="./ExternalLogin"
-                                            asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                                            <div>
-                                                <p>
-                                                    @foreach (var provider in Model.ExternalLogins!)
-                                                    {
-                                                        var ggclass = "btn btn-google btn-user btn-block";
-                                                        var icon = "<i class=\"fab fa-google fa-fw\"></i>";
-                                                        if (provider.DisplayName == "Google")
-                                                        {
-                                                            ggclass = "btn btn-google btn-user btn-block";
-                                                            icon = "<i class=\"fab fa-google fa-fw\"></i>";
-                                                        }
-                                                        else if (provider.DisplayName == "Facebook")
-                                                        {
-                                                            ggclass = "btn btn-facebook btn-user btn-block";
-                                                            icon = "<i class=\"fab fa-facebook-f fa-fw\"></i>";
-                                                        }
-                                                        <button type="submit" class="@ggclass" name="provider"
-                                                            value="@provider.Name"
-                                                            title="Log in using your @provider.DisplayName account">
-                                                            @Html.Raw(@icon)Login with @provider.DisplayName</button>
-                                                    }
-                                                </p>
-                                            </div>
-                                        </form>
-                                    }
-                                }
-
+                                <div class="d-flex flex-end">
+                                    <div class="text-center mx-2">
+                                        <a class="small" id="forgot-password" asp-page="./ForgotPassword">Forgot
+                                            Password?</a>
+                                    </div>
+                                    <div class="text-center">
+                                        <a class="small" asp-page="./Register"
+                                            asp-route-returnUrl="@Model.ReturnUrl">Create
+                                            an Account!</a>
+                                    </div>
+                                </div>
                             </form>
                             <hr>
-                            <div class="text-center">
-                                <a class="small" id="forgot-password" asp-page="./ForgotPassword">Forgot Password?</a>
-                            </div>
-                            <div class="text-center">
-                                <a class="small" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Create an
-                                    Account!</a>
-                            </div>
+                            @{
+                                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                                {
+
+                                }
+                                else
+                                {
+                                    <form id="external-account" asp-page="./ExternalLogin"
+                                        asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                        <div>
+                                            <p>
+                                                @foreach (var provider in Model.ExternalLogins!)
+                                                {
+                                                    var ggclass = "btn btn-google btn-user btn-block";
+                                                    var icon = "<i class=\"fab fa-google fa-fw\"></i>";
+                                                    if (provider.DisplayName == "Google")
+                                                    {
+                                                        ggclass = "btn btn-google btn-user btn-block";
+                                                        icon = "<i class=\"fab fa-google fa-fw\"></i>";
+                                                    }
+                                                    else if (provider.DisplayName == "Facebook")
+                                                    {
+                                                        ggclass = "btn btn-facebook btn-user btn-block";
+                                                        icon = "<i class=\"fab fa-facebook-f fa-fw\"></i>";
+                                                    }
+                                                    <button type="submit" class="@ggclass" name="provider" value="@provider.Name"
+                                                        title="Log in using your @provider.DisplayName account">
+                                                        @Html.Raw(@icon)Login with @provider.DisplayName</button>
+                                                }
+                                            </p>
+                                        </div>
+                                    </form>
+                                }
+                            }
+
+
+
 
                         </div>
                     </div>

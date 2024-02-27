@@ -1,9 +1,14 @@
+using AppMVC.Data;
 using AppMVC.Models;
 using AppMVC.Models.Blog;
 using AppMVC.Models.Product;
 using Bogus;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace AppMVC.Controllers
 {
@@ -12,14 +17,84 @@ namespace AppMVC.Controllers
     {
         private readonly AppDbContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public DbManageController(AppDbContext context, UserManager<AppUser> userManager)
+        public DbManageController(AppDbContext context, UserManager<AppUser> userManager,
+                                RoleManager<IdentityRole> roleManager, SignInManager<AppUser> signInManager)
         {
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
+            _signInManager = signInManager;
         }
         [TempData]
         public string StatusMessage { get; set; }
+
+        [HttpGet]
+        [Authorize(Roles = RoleName.Admin)]
+        public IActionResult DeleteDb()
+        {
+            return View();
+        }
+        [HttpPost]
+        [Authorize(Roles = RoleName.Admin)]
+        public async Task<IActionResult> DeleteDbAsync()
+        {
+            var success = await _context.Database.EnsureDeletedAsync();
+            StatusMessage = success ? "Deleted Database successfully" : "Could not delete database";
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        public async Task<IActionResult> MigrationAsync()
+        {
+            await _context.Database.MigrateAsync();
+            StatusMessage = "Migrated successfully";
+            return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> SeedDataAsync()
+        {
+            var roles = typeof(RoleName).GetFields().ToList();
+            foreach (var role in roles)
+            {
+                var roleName = (string)role.GetRawConstantValue();
+                var roleFound = _roleManager.FindByNameAsync(roleName);
+                if (roleFound == null)
+                {
+                    await _roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+
+            var userAdmin = await _userManager.FindByEmailAsync("admin@example.com");
+            if (userAdmin == null)
+            {
+                userAdmin = new AppUser()
+                {
+                    UserName = "Admin",
+                    Email = "admin@example.com",
+                    EmailConfirmed = true
+                };
+                await _userManager.CreateAsync(userAdmin, "admin123");
+                await _userManager.AddToRoleAsync(userAdmin, RoleName.Admin);
+                await _signInManager.SignInAsync(userAdmin, false);
+                return RedirectToAction("SeedData");
+            }
+            else
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null) return Forbid();
+                var userRoles = await _userManager.GetRolesAsync(user);
+                if (!userRoles.Any(r => r == RoleName.Admin))
+                {
+                    return Forbid();
+                }
+            }
+
+            await SeedPostCategory();
+            await SeedProductCategory();
+            StatusMessage = "Seed Data Success";
+            return RedirectToAction(nameof(Index));
+        }
 
         [Route("/database-manage/[action]")]
         // GET: DbManage
@@ -28,7 +103,7 @@ namespace AppMVC.Controllers
             StatusMessage = "Hello index database";
             return View();
         }
-        public async Task<IActionResult> SeedData()
+        public async Task<IActionResult> SeedPostCategory()
         {
             _context.Categories.RemoveRange(_context.Categories.Where(c => c.Content.Contains("[fakeData]")));
             _context.Posts.RemoveRange(_context.Posts.Where(p => p.Content.Contains("[fakeData]")));

@@ -1,0 +1,29 @@
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
+@{
+    ViewData["Title"] = "Delete Db";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p class="alert alert-danger">
+    Are you Sure?
+</p>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">
+        Delete Db
+    </button>
+
+    <hr>
+    <a asp-action="Index">Manage Db</a>
+
+
+</form>
+
+@{
+    _adminSidebarService.SetActive("DbManage", "Index", "Database");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

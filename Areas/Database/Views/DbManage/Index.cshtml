@@ -18,8 +18,7 @@
 <p>State: @connect.State</p>
 <a class="btn btn-primary" asp-action="SeedData" asp-controller="DbManage" asp-area="Database">Seed
     Post Category</a>
-<a class="btn btn-primary" asp-action="SeedProductCategory" asp-controller="DbManage" asp-area="Database">Seed
-    Product Category</a>
+<a class="btn btn-danger" asp-action="DeleteDb" asp-controller="DbManage" asp-area="Database">Delete Database</a>
 
 @{
     _adminSidebarService.SetActive("DbManage", "Index", "Database");

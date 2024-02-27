@@ -10,9 +10,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.FileProviders;
 using AppMVC.Menu;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Net;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
-// var connectionString = builder.Configuration.GetConnectionString("AppDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AppDbContextConnection' not found.");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -134,12 +136,7 @@ app.UseStaticFiles(new StaticFileOptions
     ),
     RequestPath = "/contents"
 });
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-           Path.Combine(Directory.GetCurrentDirectory(), "MyStaticFiles")),
-    RequestPath = "/StaticFiles"
-});
+
 
 //Session
 app.UseSession();

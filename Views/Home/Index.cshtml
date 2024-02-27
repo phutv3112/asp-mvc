@@ -1,15 +1,57 @@
-﻿@{
+﻿@using AppMVC.Models.Product
+@using AppMVC.Models.Blog
+@{
     ViewData["Title"] = "Home Page";
+    var products = ViewBag.products as IQueryable<ProductModel>;
+    var posts = ViewBag.posts as IQueryable<Post>;
 }
-<partial name="_AlertMessage" />
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h2>List Products</h2>
+<div class="d-flex flex-wrap justify-content-between">
+    @foreach (var product in products)
+    {
+        var srcImg = "/contents/planet/Earth.jpg";
+        if (product.Photos.Any())
+        {
+            srcImg = $"/contents/Products/{product.Photos.FirstOrDefault().FileName}";
+        }
+        <div class="card mb-2" style="width: 24%;">
+            <img src=@srcImg class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">@product.Title</h5>
+                <p class="card-text">@product.Description</p>
+                <p>
+                    <strong>@product.ProductCategories.FirstOrDefault()?.Category.Title</strong>
+
+                </p>
+                <p>Price: @product.Price</p>
+                <div class="card-body">
+                    <a class="card-link" asp-action="Detail" asp-controller="ViewProduct"
+                        asp-route-productslug="@product.Slug">Detail</a>
+                    <a asp-action="AddToCart" asp-controller="ViewProduct" asp-route-productid="@product.ProductId"
+                        class="btn btn-sm btn-primary">Add to cart</a>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
-<textarea id="summernote"></textarea>
-
-@{
-    var summernote = new AppMVC.Models.Summernote("#summernote");
+<h2>List Posts</h2>
+@foreach (var post in posts)
+{
+    <div class="container mt-3">
+        <div class="d-flex border p-3">
+            <img src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png" alt="John Doe"
+                class="flex-shrink-0 me-3 mt-3 rounded-circle" style="width:60px;height:60px;">
+            <div>
+                <h4>
+                    <a asp-controller="ViewPost" asp-action="Detail" asp-route-postslug="@post.Slug">@post.Title</a>
+                </h4>
+                <p>@post.Description</p>
+                <div class="author-row">
+                    Author: <strong>@post.Author.UserName</strong> |
+                    Date: <i>@post.DateUpdated.ToShortDateString()</i>
+                </div>
+            </div>
+        </div>
+    </div>
 }
-<partial name="_Summernote" model="summernote" />
