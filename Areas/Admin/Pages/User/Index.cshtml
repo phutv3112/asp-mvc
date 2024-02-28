@@ -1,7 +1,10 @@
 ﻿@page "/admin/users"
 @model App.Admin.USer.IndexModel
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
 @{
     ViewData["Title"] = "Roles";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 <partial name="_StatusMessage" model="@Model.StatusMessage" />
 
@@ -42,3 +45,6 @@
             };
 }
 <partial name="_Paging" model="@pagingmodel" />
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

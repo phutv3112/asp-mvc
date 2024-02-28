@@ -70,3 +70,9 @@
 </table>
 
 <partial name="_Paging" model="@ViewBag.pagingModel" />
+@{
+    _adminSidebarService.SetActive("ProductManager", "Index", "Product");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

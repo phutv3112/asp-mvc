@@ -1,5 +1,6 @@
 @model AppMVC.Models.Product.CategoryProduct
 
+
 @{
     ViewData["Title"] = "Delete";
 }
@@ -43,3 +44,9 @@
         <a asp-action="Index">Back to List</a>
     </form>
 </div>
+@{
+    _adminSidebarService.SetActive("CategoryProduct", "Index", "Product");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

@@ -1,7 +1,10 @@
 ﻿@page "/admin/add-role"
 @model App.Admin.Role.CreateModel
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
 @{
     ViewData["Title"] = "Roles";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 <partial name="_StatusMessage" model="@Model.StatusMessage" />
 <hr />
@@ -27,4 +30,7 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
 }

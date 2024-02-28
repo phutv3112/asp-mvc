@@ -36,7 +36,7 @@ namespace AppMVC.Menu
             else if (Type == SidebarItemType.Heading)
             {
                 html.Append(@$"
-                    <div class=""sidebar-heading"">
+                    <div class=""sidebar-heading mt-2"">
                         {Title}
                     </div>
                 ");

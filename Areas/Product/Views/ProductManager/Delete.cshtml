@@ -50,3 +50,9 @@
         <a asp-action="Index">Back to List</a>
     </form>
 </div>
+@{
+    _adminSidebarService.SetActive("ProductManager", "Index", "Product");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

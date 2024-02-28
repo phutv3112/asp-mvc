@@ -30,6 +30,7 @@ namespace AppMVC.Menu
                 Title = "Manage Database",
                 AwesomeIcon = "fas fa-database"
             });
+            Items.Add(new SidebarItem() { Type = SidebarItemType.Divider });
             Items.Add(new SidebarItem()
             {
                 Type = SidebarItemType.NavItem,
@@ -39,45 +40,14 @@ namespace AppMVC.Menu
                 Title = "Manage Contact",
                 AwesomeIcon = "far fa-address-card"
             });
-            Items.Add(new SidebarItem() { Type = SidebarItemType.Divider });
-
-            Items.Add(new SidebarItem()
-            {
-                Type = SidebarItemType.NavItem,
-                Title = "Roles & Members",
-                AwesomeIcon = "far fa-folder",
-                CollapseId = "role",
-                Items = new List<SidebarItem>() {
-                        new SidebarItem() {
-                                Type = SidebarItemType.NavItem,
-                                Controller = "Role",
-                                Action = "Index",
-                                Area = "Identity",
-                                Title = "Role"
-                        },
-                         new SidebarItem() {
-                                Type = SidebarItemType.NavItem,
-                                Controller = "Role",
-                                Action = "Create",
-                                Area = "Identity",
-                                Title = "Create new role"
-                        },
-                        new SidebarItem() {
-                                Type = SidebarItemType.NavItem,
-                                Controller = "User",
-                                Action = "Index",
-                                Area = "Identity",
-                                Title = "Member list"
-                        },
-                    },
-            });
+           
             Items.Add(new SidebarItem() { Type = SidebarItemType.Divider });
 
             Items.Add(new SidebarItem()
             {
                 Type = SidebarItemType.NavItem,
                 Title = "Manage Posts",
-                AwesomeIcon = "far fa-folder",
+                AwesomeIcon = "fab fa-usps",
                 CollapseId = "blog",
                 Items = new List<SidebarItem>() {
                         new SidebarItem() {
@@ -115,7 +85,7 @@ namespace AppMVC.Menu
             {
                 Type = SidebarItemType.NavItem,
                 Title = "Manage Products",
-                AwesomeIcon = "far fa-folder",
+                AwesomeIcon = "fas fa-leaf",
                 CollapseId = "product",
                 Items = new List<SidebarItem>() {
                         new SidebarItem() {
@@ -134,21 +104,20 @@ namespace AppMVC.Menu
                         },
                         new SidebarItem() {
                                 Type = SidebarItemType.NavItem,
-                                Controller = "ProductManage",
+                                Controller = "ProductManager",
                                 Action = "Index",
                                 Area = "Product",
                                 Title = "Products"
                         },
                         new SidebarItem() {
                                 Type = SidebarItemType.NavItem,
-                                Controller = "ProductManage",
+                                Controller = "ProductManager",
                                 Action = "Create",
                                 Area = "Product",
                                 Title = "Create Product",
                         },
                     },
             });
-
 
         }
 

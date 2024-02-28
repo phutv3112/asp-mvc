@@ -46,3 +46,9 @@
     var summernote = new AppMVC.Models.Summernote("#Content");
 }
 <partial name="_Summernote" model="summernote" />
+@{
+    _adminSidebarService.SetActive("CategoryProduct", "Create", "Product");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

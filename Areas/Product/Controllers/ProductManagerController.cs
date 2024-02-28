@@ -16,7 +16,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AppMVC.Areas.Product.Controllers
 {
-    [Area("product")]
+    [Area("Product")]
     [Route("admin/product/[action]/{id?}")]
     [Authorize(Roles = "Admin")]
     public class ProductManagerController : Controller

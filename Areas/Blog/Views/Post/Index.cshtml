@@ -1,4 +1,6 @@
 @model IEnumerable<AppMVC.Models.Blog.Post>
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
 
 @{
     ViewData["Title"] = "Index";
@@ -65,3 +67,9 @@
 </table>
 
 <partial name="_Paging" model="@ViewBag.pagingModel" />
+@{
+    _adminSidebarService.SetActive("Post", "Index", "Blog");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

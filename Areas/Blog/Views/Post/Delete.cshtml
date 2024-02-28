@@ -1,4 +1,6 @@
 @model AppMVC.Models.Blog.Post
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
 
 @{
     ViewData["Title"] = "Delete";
@@ -67,3 +69,9 @@
         <a asp-action="Index">Back to List</a>
     </form>
 </div>
+@{
+    _adminSidebarService.SetActive("Post", "Index", "Blog");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

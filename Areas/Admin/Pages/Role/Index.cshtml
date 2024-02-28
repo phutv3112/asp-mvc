@@ -1,7 +1,10 @@
 ﻿@page "/admin/roles"
 @model App.Admin.Role.IndexModel
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
 @{
     ViewData["Title"] = "Roles";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 <partial name="_StatusMessage" model="@Model.StatusMessage" />
 <div class="mb-2">
@@ -35,3 +38,6 @@
     }
 
 </table>
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

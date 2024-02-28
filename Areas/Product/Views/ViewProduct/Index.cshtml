@@ -49,8 +49,8 @@ else
                 </p>
                 <p>Price: @product.Price</p>
                 <div class="card-body">
-                    <a class="card-link" asp-action="Detail" asp-controller="ViewProduct"
-                        asp-route-productslug="@product.Slug">Detail</a>
+                    <a class="card-link" asp-area="Product" asp-action="Detail" asp-controller="ViewProduct"
+                       asp-route-productslug="@product.Slug">Detail</a>
                     <a asp-action="AddToCart" asp-controller="ViewProduct" asp-route-productid="@product.ProductId"
                         class="btn btn-sm btn-primary">Add to cart</a>
                 </div>

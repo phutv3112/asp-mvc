@@ -67,3 +67,9 @@
         }
     }
 }
+@{
+    _adminSidebarService.SetActive("CategoryProduct", "Index", "Product");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

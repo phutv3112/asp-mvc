@@ -1,5 +1,7 @@
 @* @model AppMVC.Models.Blog.Post *@
 @model AppMVC.Areas.Blog.Models.CreatePostModel
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
 
 @{
     ViewData["Title"] = "Edit";
@@ -71,3 +73,9 @@
     var summernote = new AppMVC.Models.Summernote("#Content");
 }
 <partial name="_Summernote" model="summernote" />
+@{
+    _adminSidebarService.SetActive("Post", "Index", "Blog");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

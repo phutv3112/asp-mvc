@@ -1,4 +1,6 @@
 @model AppMVC.Models.Blog.Category
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
 
 @{
     ViewData["Title"] = "Edit";
@@ -44,3 +46,9 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+@{
+    _adminSidebarService.SetActive("Category", "Index", "Blog");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}
