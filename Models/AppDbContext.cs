@@ -1,5 +1,6 @@
 using AppMVC.Models.Blog;
 using AppMVC.Models.Contacts;
+using AppMVC.Models.Order;
 using AppMVC.Models.Product;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,10 @@ namespace AppMVC.Models
             {
                 entity.HasKey(p => new { p.ProductId, p.CategoryId });
             });
+            modelBuilder.Entity<OrderModel>(entity =>
+            {
+                entity.Property(e => e.Status).HasConversion<string>();
+            });
 
         }
         public DbSet<Contact> Contacts { get; set; }
@@ -64,5 +69,8 @@ namespace AppMVC.Models
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<CategoryProduct> CategoryProducts { get; set; }
         public DbSet<ProductPhoto> ProductPhotos { get; set; }
+        public DbSet<UserAddress> UserAddresses { get; set; }
+        public DbSet<OrderModel> Orders { get; set; }
+        public DbSet<OrderItem> OrdersItems { get; set;}
     }
 }

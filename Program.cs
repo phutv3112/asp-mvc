@@ -15,10 +15,12 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
+//var connectionString = builder.Configuration.GetConnectionString("AppDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AppDbContextConnection' not found.");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages()
+    .AddRazorRuntimeCompilation();
 
 builder.Services.AddSingleton<PlanetService>();
 
@@ -111,8 +113,9 @@ builder.Services.AddAuthentication()
     options.CallbackPath = "/fb-login";
 });
 
+// Cart Service
 builder.Services.AddTransient<CartService>();
-
+//
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<AdminSidebarService>();
 

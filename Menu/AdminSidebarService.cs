@@ -118,6 +118,16 @@ namespace AppMVC.Menu
                         },
                     },
             });
+            Items.Add(new SidebarItem() { Type = SidebarItemType.Divider });
+            Items.Add(new SidebarItem()
+            {
+                Type = SidebarItemType.NavItem,
+                Controller = "Order",
+                Action = "Index",
+                Area = "Product",
+                Title = "Manage Orders",
+                AwesomeIcon = "fas fa-gifts" 
+            });
 
         }
 

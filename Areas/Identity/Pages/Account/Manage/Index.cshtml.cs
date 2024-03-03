@@ -6,15 +6,13 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using AppMVC.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using AppMVC.Models;
 
-namespace EntityFrame.Areas.Identity.Pages.Account.Manage
+namespace AppMVC.Areas.Identity.Pages.Account.Manage
 {
-    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
@@ -33,6 +31,7 @@ namespace EntityFrame.Areas.Identity.Pages.Account.Manage
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public string Username { get; set; }
+        public string Email {  get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -61,38 +60,39 @@ namespace EntityFrame.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
-            [Display(Name = "Home Address")]
-            [StringLength(255)]
             public string HomeAddress { get; set; }
-            [Display(Name = "Date of Birth")]
-            [DataType(DataType.DateTime)]
-            public string DateOfBirth { get; set; }
+            public DateTime? DateOfBirth { get; set; } 
+            public string FullName { get; set; }
         }
+
         private async Task LoadAsync(AppUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
+            var email = await _userManager.GetEmailAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
+            Email = email;
 
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
                 HomeAddress = user.HomeAddress,
-                DateOfBirth = user.DateOfBirth.ToString()
+                DateOfBirth = user.DateOfBirth,
+                FullName = user.FullName
             };
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            if (user != null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                await LoadAsync(user);
+                return Page();
             }
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-            await LoadAsync(user);
-            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -106,22 +106,24 @@ namespace EntityFrame.Areas.Identity.Pages.Account.Manage
             if (!ModelState.IsValid)
             {
                 await LoadAsync(user);
+               
                 return Page();
             }
 
-            // var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            // if (Input.PhoneNumber != phoneNumber)
-            // {
-            //     var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-            //     if (!setPhoneResult.Succeeded)
-            //     {
-            //         StatusMessage = "Unexpected error when trying to set phone number.";
-            //         return RedirectToPage();
-            //     }
-            // }
-            user.PhoneNumber = Input.PhoneNumber;
-            user.DateOfBirth = Convert.ToDateTime(Input.DateOfBirth);
+            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            if (Input.PhoneNumber != phoneNumber)
+            {
+                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+                if (!setPhoneResult.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    return RedirectToPage();
+                }
+            }
             user.HomeAddress = Input.HomeAddress;
+            user.DateOfBirth = Input.DateOfBirth;
+            user.FullName = Input.FullName;
+            
             await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);

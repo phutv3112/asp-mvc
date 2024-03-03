@@ -3,53 +3,121 @@
 @{
     List<Category> categories = ViewBag.categories as List<Category>;
     Category category = ViewBag.category as Category;
+    IQueryable<Post> recentNews = ViewBag.recentNews as IQueryable<Post>;
     ViewData["Title"] = (category != null) ? category.Title : "Post in Categories";
 }
 
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="~/">Home</a></li>
-        @if (category != null)
-        {
-            var list = category.ListParents();
-            foreach (var item in list)
-            {
-                <li class="breadcrumb-item"><a asp-action="Index" asp-route-categoryslug="@item.Slug">@item.Title</a></li>
-            }
-        }
-    </ol>
-</nav>
 
-<h2>@ViewData["Title"]</h2>
-@if (category != null)
-{
-    <p>@category.Content</p>
-}
-else
-{
-    <p>All Post in Categories</p>
-}
-<hr />
-@foreach (var post in Model)
-{
-    <div class="container mt-3">
-        <div class="d-flex border p-3">
-            <img src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png" alt="John Doe"
-                class="flex-shrink-0 me-3 mt-3 rounded-circle" style="width:60px;height:60px;">
-            <div>
-                <h4>
-                    <a asp-controller="ViewPost" asp-action="Detail" asp-route-postslug="@post.Slug">@post.Title</a>
-                </h4>
-                <p>@post.Description</p>
-                <div class="author-row">
-                    Author: <strong>@post.Author.UserName</strong> |
-                    Date: <i>@post.DateUpdated.ToShortDateString()</i>
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/UserAssets/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Blog</h2>
+                    <div class="breadcrumb__option">
+                        <a href="./index.html">Home</a>
+                        <span>Blog</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-}
-@section Sidebar {
+</section>
+<!-- Breadcrumb Section End -->
+<!-- Blog Section Begin -->
+<section class="blog spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-5">
+                <div class="blog__sidebar">
+                    <div class="blog__sidebar__search">
+                        <form action="#">
+                            <input type="text" placeholder="Search...">
+                            <button type="submit"><span class="icon_search"></span></button>
+                        </form>
+                    </div>
+                    <div class="blog__sidebar__item">
+                        <ul>
+                            
+                            @await Component.InvokeAsync("AppMVC.Components.CategorySidebar",
+                                     new CategorySidebar.CategorySidebarData()
+                            {
+                                Categories = categories,
+                                level = 0,
+                                categoryslug = ViewBag.categoryslug
+                            })
+                        </ul>
+                    </div>
+                    <div class="blog__sidebar__item">
+                        <h4>Recent News</h4>
+                        <div class="blog__sidebar__recent">
+                            @foreach (var post in recentNews)
+                            {
+                                <a href="#" class="blog__sidebar__recent__item">
+                                    <div class="blog__sidebar__recent__item__pic">
+                                        <img src="~/UserAssets/img/blog/sidebar/sr-1.jpg" alt="">
+                                    </div>
+                                    <div class="blog__sidebar__recent__item__text">
+                                        <h6>@post.Title <br /> @post.Description</h6>
+                                        <span>@post.DateUpdated.ToShortDateString()</span>
+                                    </div>
+                                </a>
+                            }
+                           
+                            
+                        </div>
+                    </div>
+                    <div class="blog__sidebar__item">
+                        <h4>Search By</h4>
+                        <div class="blog__sidebar__item__tags">
+                            <a href="#">Apple</a>
+                            <a href="#">Beauty</a>
+                            <a href="#">Vegetables</a>
+                            <a href="#">Fruit</a>
+                            <a href="#">Healthy Food</a>
+                            <a href="#">Lifestyle</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 col-md-7">
+                <div class="row">
+                    @foreach (var post in Model)
+                    {
+                        string actionUrl = @Url.Action("Detail", "ViewPost", new { area = "Blog", postslug = post.Slug });
+                        <div style="cursor:pointer" onclick="window.location.href='@actionUrl'" class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="blog__item">
+                                <div class="blog__item__pic">
+                                    <img src="~/UserAssets/img/blog/blog-2.jpg" alt="">
+                                </div>
+                                <div class="blog__item__text">
+                                    <ul>
+                                        <li><i class="fa fa-calendar-o"></i> @post.DateUpdated.ToShortDateString()9</li>
+                                        <li><i class="fa fa-comment-o"></i> 5</li>
+                                    </ul>
+                                    <h5><a asp-area="Blog" asp-controller="ViewPost" asp-action="Detail"
+                                        asp-route-postslug="@post.Slug">@post.Title</a></h5>
+                                    <p>
+                                        @post.Description
+                                    </p>
+                                    <a asp-area="Blog" asp-controller="ViewPost" asp-action="Detail"
+                                    asp-route-postslug="@post.Slug" class="blog__btn">READ MORE <span class="arrow_right"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                    <partial name="_Paging" model="@ViewBag.pagingModel" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Blog Section End -->
+
+
+@* @section Sidebar {
     @await Component.InvokeAsync("AppMVC.Components.CategorySidebar",
         new CategorySidebar.CategorySidebarData()
 {
@@ -57,6 +125,5 @@ else
     level = 0,
     categoryslug = ViewBag.categoryslug
 })
-}
+} *@
 
-<partial name="_Paging" model="@ViewBag.pagingModel" />

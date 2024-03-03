@@ -1,0 +1,17 @@
+﻿@model AppMVC.Models.Order.OrderModel
+
+@{
+    ViewData["Title"] = "OrderSuccess";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="container">
+    
+    <div class="alert alert-success" role="alert">
+        <p>
+            Checkout Successfully! Please click <a asp-action="OrderDetail" asp-controller="Order" asp-area="Product" asp-route-id="@Model.Id">
+                <i style="font-size:26px; color:green;" class="fa fa-crosshairs" aria-hidden="true"></i>
+            </a>here to see order detail:
+        </p>
+    </div>
+</div>

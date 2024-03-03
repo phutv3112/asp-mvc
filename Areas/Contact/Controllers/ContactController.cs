@@ -70,7 +70,7 @@ namespace AppMVC.Areas.Contact.Controllers
                 await _context.SaveChangesAsync();
 
                 StatusMessage = "Send contact information successfully";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("SendContact", "Contact", new {area="Contact"});
             }
             return View(contact);
         }

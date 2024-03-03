@@ -1,7 +1,12 @@
 using AppMVC.Areas.Product.Models;
+using AppMVC.Data;
 using AppMVC.Helpers;
+using AppMVC.Migrations;
 using AppMVC.Models;
+using AppMVC.Models.Order;
 using AppMVC.Models.Product;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,17 +18,20 @@ namespace AppMVC.Areas.Product.Controllers
         private readonly ILogger<ViewProductController> _logger;
         private readonly AppDbContext _context;
         private readonly CartService _cartService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ViewProductController(ILogger<ViewProductController> logger, AppDbContext context, CartService cartService)
+        public ViewProductController(ILogger<ViewProductController> logger, AppDbContext context,
+            CartService cartService, UserManager<AppUser> userManager)
         {
             _context = context;
             _logger = logger;
             _cartService = cartService;
+            _userManager = userManager;
         }
 
         // GET: ViewPostController
-        [Route("/product/{categoryslug?}")]
-        public ActionResult Index(string categoryslug, [FromQuery(Name = "p")] int currentPage, int pageSize)
+        [Route("/product/{categoryslug?}", Name = "product")]
+        public ActionResult Index(string categoryslug, [FromQuery(Name = "p")] int currentPage, int pageSize, string option)
         {
             var categories = GetCategories();
             ViewBag.categories = categories;
@@ -45,7 +53,10 @@ namespace AppMVC.Areas.Product.Controllers
                                     .ThenInclude(p => p.Category)
                                     .AsQueryable();
             products.OrderByDescending(p => p.DateUpdated);
-
+            if(option =="1")
+            {
+                products = products.OrderBy(p => p.Price);
+            }
             if (category != null)
             {
                 var ids = new List<int>();
@@ -56,7 +67,7 @@ namespace AppMVC.Areas.Product.Controllers
             }
 
             int totalProduct = products.Count();
-            if (pageSize <= 0) pageSize = 6;
+            if (pageSize <= 0) pageSize = 9;
             int countPage = (int)Math.Ceiling((double)totalProduct / pageSize);
 
             if (currentPage > countPage) currentPage = countPage;
@@ -75,6 +86,12 @@ namespace AppMVC.Areas.Product.Controllers
 
             var productInPage = products.Skip((currentPage - 1) * pageSize)
                            .Take(pageSize);
+
+            var lastestProducts = _context.Products
+                        .Include(p=> p.Photos)
+                       .OrderByDescending(p => p.DateUpdated)
+                       .Take(6);
+            ViewBag.lastestProducts = lastestProducts;
 
             ViewBag.pagingModel = pagingModel;
             ViewBag.totalProduct = totalProduct;
@@ -104,8 +121,9 @@ namespace AppMVC.Areas.Product.Controllers
 
             var otherProducts = _context.Products.Where(p => p.ProductCategories.Any(c => c.Category.Id == category.Id))
                                     .Where(p => p.ProductId != product.ProductId)
+                                    .Include(p => p.Photos)
                                     .OrderByDescending(p => p.DateUpdated)
-                                    .Take(5);
+                                    .Take(4);
             ViewBag.otherProducts = otherProducts;
             return View(product);
         }
@@ -125,7 +143,7 @@ namespace AppMVC.Areas.Product.Controllers
                 .Where(p => p.ProductId == productid)
                 .FirstOrDefault();
             if (product == null)
-                return NotFound("Không có sản phẩm");
+                return NotFound("Product Not Found");
 
             // Xử lý đưa vào Cart ...
             var cart = _cartService.GetCartItems();
@@ -144,7 +162,8 @@ namespace AppMVC.Areas.Product.Controllers
             // Lưu cart vào Session
             _cartService.SaveCartSession(cart);
             // Chuyển đến trang hiện thị Cart
-            return RedirectToAction(nameof(Cart));
+            //return RedirectToAction(nameof(Cart));
+            return RedirectToAction("Index");
         }
         [Route("/updatecart", Name = "updatecart")]
         [HttpPost]
@@ -155,7 +174,7 @@ namespace AppMVC.Areas.Product.Controllers
             var cartitem = cart.Find(p => p.Product.ProductId == productid);
             if (cartitem != null)
             {
-                // Đã tồn tại, tăng thêm 1
+                
                 cartitem.quantity = quantity;
             }
             _cartService.SaveCartSession(cart);
@@ -176,16 +195,84 @@ namespace AppMVC.Areas.Product.Controllers
         }
 
         [Route("/cart", Name = "cart")]
+        [Authorize(Roles = RoleName.Member)]
         public IActionResult Cart()
         {
+            var categories = _context.CategoryProducts.Include(c => c.CategoryChildren)
+                                                   .Include(c => c.CategoryParent)
+                                                   .Where(c => c.ParentId == null);
+
+            ViewBag.categories = categories;
+
             return View(_cartService.GetCartItems());
         }
+        [HttpGet]
         [Route("/checkout")]
         public IActionResult Checkout()
         {
+            var categories = _context.CategoryProducts.Include(c => c.CategoryChildren)
+                                                   .Include(c => c.CategoryParent)
+                                                   .Where(c => c.ParentId == null);
 
-            _cartService.ClearCart();
-            return Content("Checkout done");
+            ViewBag.categories = categories;
+            //_cartService.ClearCart();
+            ViewBag.total = _cartService.GetTotalAmount();
+            ViewBag.cartItems = _cartService.GetCartItems();
+            return View();
         }
+        [HttpPost]
+        [Route("/checkout")]
+        public async Task<IActionResult> Checkout([Bind("FullName, Country, Address,Phone, OrderNote")] OrderModel model)
+        {
+            var categories = _context.CategoryProducts.Include(c => c.CategoryChildren)
+                                                   .Include(c => c.CategoryParent)
+                                                   .Where(c => c.ParentId == null);
+
+            ViewBag.categories = categories;
+            //_cartService.ClearCart();
+            ViewBag.total = _cartService.GetTotalAmount();
+
+            decimal total = _cartService.GetTotalAmount();
+
+            model.Total = total;
+            model.SubTotal = total;
+            model.UserId = _userManager.GetUserId(User);
+            if (!ModelState.IsValid)
+            {
+                // Log lỗi từ ModelState.Errors
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        Console.WriteLine($"Error: {error.ErrorMessage}");
+                    }
+                }
+
+                return Content("model is invalid");
+            }
+
+            _context.Orders.Add(model);
+            await _context.SaveChangesAsync();
+
+            var cartItems = _cartService.GetCartItems();
+            if (cartItems != null)
+            {
+                foreach (var item in cartItems)
+                {
+                    OrderItem orderItem = new OrderItem()
+                    {
+                        Quantity = item.quantity,
+                        ProductId = item.Product.ProductId,
+                        OrderId = model.Id,
+                        Price = item.Product.Price
+                    };
+                    _context.OrdersItems.Add(orderItem);
+                }
+                await _context.SaveChangesAsync();
+            }
+            //return View(_cartService.GetCartItems());
+            return Ok();
+        }
+        
     }
 }

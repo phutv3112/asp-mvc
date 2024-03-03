@@ -1,75 +1,226 @@
 @model List<AppMVC.Areas.Product.Models.CartItem>
+@inject AppDbContext _context;
 @{
-    Layout = "_Layout";
-}
-<h2>Cart</h2>
-
-@if (Model.Count > 0)
-{
-    decimal total = 0;
     int stt = 1;
+    decimal total = 0;
+}
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/UserAssets/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Shopping Cart</h2>
+                    <div class="breadcrumb__option">
+                        <a href="~/">Home</a>
+                        <span>Shopping Cart</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+<!-- Shoping Cart Section Begin -->
+<section class="shoping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__table">
+                    @if (Model.Count > 0)
+                    {
+                       
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th class="shoping__product">Products</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var cartitem in Model)
+                            {
+                                var itemTotal = cartitem.quantity * cartitem.Product.Price;
+                                var srcImg = "/contents/planet/Earth.jpg";
+                                   
 
-    <table class="table">
-        <tr>
-            <th>#</th>
-            <th>Sản phẩm</th>
-            <th>Giá</th>
-            <th>Số lượng</th>
-            <th>Thành tiền</th>
-            <th></th>
-        </tr>
-        @foreach (var cartitem in Model)
-        {
-            var thanhtien = cartitem.quantity * cartitem.Product.Price;
-            total += thanhtien;
+                                    if(cartitem.Product != null)
+                                    {
+                                        var id = cartitem.Product.ProductId;
+                                        var qr = _context.ProductPhotos.Where(p => p.ProductId == id).FirstOrDefault();
+                                        srcImg = $"/contents/Products/{qr.FileName}";
+                                    }
+                                    
+                                    total += itemTotal;
+                                 <tr>
+                                        <td>@(stt++)</td>
+                                        <td class="shoping__cart__item">
+                                            <img style="width:60px" src=@srcImg alt="">
+                                            <h5>@cartitem.Product.Title</h5>
+                                        </td>
+                                        <td class="shoping__cart__price">
+                                            $@(cartitem.Product.Price.ToString("n0"))
+                                        </td>
+                                        <td class="shoping__cart__quantity">
+                                            <div class="quantity">
+                                                <div class="pro-qty">
+                                                    <input asp-for="@cartitem.quantity" id="@($"quantity-{cartitem.Product.ProductId}")" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="shoping__cart__total">
+                                            $@(itemTotal.ToString("n0"))
+                                        </td>
+                                        <td class="shoping__cart__item__close">
+                                            <a asp-route="removecart" asp-route-productid="@cartitem.Product.ProductId"
+                                              > <span class="icon_close"></span></a>
+                                            <button style="border:none" class="cart-btn updatecartitem" data-productid="@cartitem.Product.ProductId">
+                                                Update
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @* <tr>
+                                    <td>@(stt++)</td>
+                                    <td>@cartitem.Product.Title</td>
+                                    <td>@(cartitem.Product.Price.ToString("n0"))</td>
+                                    <td><input asp-for="@cartitem.quantity" id="@($"quantity-{cartitem.Product.ProductId}")" /></td>
+                                     <td>@(itemTotal.ToString("n0"))</td>
+                                    <td>
+                                        <button class="btn btn-success updatecartitem" data-productid="@cartitem.Product.ProductId">
+                                            Cập
+                                            nhật
+                                        </button>
+                                        <a asp-route="removecart" asp-route-productid="@cartitem.Product.ProductId" class="btn btn-danger">Xóa</a>
+                                    </td>
+                                </tr> *@
+                            }
+                            </tbody>
+                            <tr>
+                                <td colspan="4" class="text-right">SubTotal</td>
+                                <td>$@(total.ToString("n0"))</td>
+                                <td></td>
+                            </tr>
+                        </table>
 
-            <tr>
-                <td>@(stt++)</td>
-                <td>@cartitem.Product.Title</td>
-                <td>@(cartitem.Product.Price.ToString("n0"))</td>
-                <td><input asp-for="@cartitem.quantity" id="@($"quantity-{cartitem.Product.ProductId}")" /></td>
-                <td>@(thanhtien.ToString("n0"))</td>
-                <td>
-                    <button class="btn btn-success updatecartitem" data-productid="@cartitem.Product.ProductId">Cập
-                        nhật</button>
-                    <a asp-route="removecart" asp-route-productid="@cartitem.Product.ProductId" class="btn btn-danger">Xóa</a>
-                </td>
-            </tr>
-        }
-        <tr>
-            <td colspan="4" class="text-right">Tổng tiền</td>
-            <td>@(total.ToString("n0"))</td>
-            <td></td>
-        </tr>
-    </table>
+                        @section Scripts {
+                        <script>
+                            $(document).ready(function () {
+                                
+                                $(".updatecartitem").click(function (event) {
+                                    event.preventDefault();
+                                    var productid = $(this).attr("data-productid");
+                                    var quantity = $("#quantity-" + productid).val();
+                                    if (quantity <= 0) {
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.RouteUrl("removecart")",
+                                            data: {
+                                                productid: productid,
+                                            },
+                                            success: function (result) {
+                                                window.location.href = "@Url.RouteUrl("cart")";
+                                            }
+                                        });
+                                    } else {
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.RouteUrl("updatecart")",
+                                            data: {
+                                                productid: productid,
+                                                quantity: quantity
+                                            },
+                                            success: function (result) {
+                                                window.location.href = "@Url.RouteUrl("cart")";
+                                            }
+                                        });
+                                    }
+                                    
+                                });
+                            });
+                        </script>
+                        }
 
-    <a asp-controller="ViewProduct" asp-action="Checkout" class="btn btn-success">Checkout</a>
-
-    @section Scripts {
-    <script>
-        $(document).ready(function () {
-            $(".updatecartitem").click(function (event) {
-                event.preventDefault();
-                var productid = $(this).attr("data-productid");
-                var quantity = $("#quantity-" + productid).val();
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.RouteUrl("updatecart")",
-                    data: {
-                        productid: productid,
-                        quantity: quantity
-                    },
-                    success: function (result) {
-                        window.location.href = "@Url.RouteUrl("cart")";
                     }
-                });
-            });
-        });
-    </script>
-    }
+                    else
+                    {
+                        <p class="alert alert-danger">Cart Empty</p>
+                    }
+                    @* <div class="row">
+                        <div class="col-lg-12">
+                            <div class="shoping__cart__btns">
+                                <a asp-action="Index" asp-controller="ViewProduct" asp-area="Product" asp-route-categoryslug=""
+                                   class="primary-btn cart-btn">CONTINUE SHOPPING</a>
+                                <a href="#" class="primary-btn cart-btn cart-btn-right ">
 
-}
-else
-{
-    <p class="alert alert-danger">Giỏ hàng trống</p>
-}
+                                    Upadate Cart
+                                </a>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="shoping__continue">
+                                <div class="shoping__discount">
+                                    <h5>Discount Codes</h5>
+                                    <form action="#">
+                                        <input type="text" placeholder="Enter your coupon code">
+                                        <button type="submit" class="site-btn">APPLY COUPON</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="shoping__checkout">
+                                <h5>Cart Total</h5>
+                                <ul>
+                                    <li>Subtotal <span>$@total</span></li>
+                                    <li>Total <span>$@total</span></li>
+                                </ul>
+                                <a asp-controller="ViewProduct" asp-action="Checkout" class="primary-btn">PROCEED TO CHECKOUT</a>
+                            </div>
+                        </div>
+                    </div> *@
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__btns">
+                    <a asp-action="Index" asp-controller="ViewProduct" asp-area="Product" asp-route-categoryslug=""
+                    class="primary-btn cart-btn">CONTINUE SHOPPING</a>
+                    <a href="#" class="primary-btn cart-btn cart-btn-right ">
+                        
+                        Upadate Cart
+                    </a>
+                    
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="shoping__continue">
+                    <div class="shoping__discount">
+                        <h5>Discount Codes</h5>
+                        <form action="#">
+                            <input type="text" placeholder="Enter your coupon code">
+                            <button type="submit" class="site-btn">APPLY COUPON</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="shoping__checkout">
+                    <h5>Cart Total</h5>
+                    <ul>
+                        <li>Subtotal <span>$@total</span></li>
+                        <li>Total <span>$@total</span></li>
+                    </ul>
+                    <a asp-controller="Order" asp-action="Create" asp-area="Product" class="primary-btn">PROCEED TO CHECKOUT</a>
+                    @* <a asp-controller="ViewProduct" asp-action="Checkout" asp-area="Product" class="primary-btn">PROCEED TO CHECKOUT</a> *@
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Shoping Cart Section End -->

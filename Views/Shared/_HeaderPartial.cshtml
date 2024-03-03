@@ -1,0 +1,103 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using AppMVC.Areas.Identity
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+@inject CartService _cartService;
+
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@{
+    var cart = _cartService.GetCartItems();
+    decimal total = 0;
+    foreach(var item in cart)
+    {
+        total += (item.quantity * item.Product.Price);
+    }
+}
+<header class="header">
+    <div class="header__top">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="header__top__left">
+                        <ul>
+                            <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
+                            <li>Free Shipping for all Order of $99</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="header__top__right d-flex justify-content-end">
+                        @* <div class="header__top__right__social">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-linkedin"></i></a>
+                            <a href="#"><i class="fa fa-pinterest-p"></i></a>
+                        </div> *@
+                        <partial name="_DbManage" />
+                        <div class="header__top__right__auth d-flex">
+                            
+                            @if (SignInManager.IsSignedIn(User))
+                            {
+                                <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"><i class="fa fa-user"></i> Account</a>
+                                <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                    <button id="logout" type="submit" class="nav-link btn-sm btn btn-link text-dark border-0"><i class="fa fa-sign-out"></i> Logout</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a id="login" asp-area="Identity" asp-page="/Account/Login"><i class="fa fa-sign-in"></i> Login</a>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="header__logo">
+                    <a asp-controller="Home" asp-action="Index"><img src="~/userassets/img/logo.png" alt=""></a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <nav class="header__menu">
+                    <ul>
+                        <li class="active"><a href="~/">Home</a></li>
+                        <li><a asp-controller="ViewProduct" asp-action="Index" asp-area="Product" asp-route-categoryslug="">Shop</a></li>
+                        <li>
+                            <a href="#">Pages</a>
+                            <ul class="header__menu__dropdown">
+                                <li><a href="./shop-details.html">Shop Details</a></li>
+                                <li><a href="./shoping-cart.html">Shoping Cart</a></li>
+                                <li><a href="./checkout.html">Check Out</a></li>
+                                <li><a href="./blog-details.html">Blog Details</a></li>
+                            </ul>
+                        </li>
+                        <li><a asp-area="Blog" asp-controller="ViewPost" asp-action="Index">Blog</a></li>
+                        <li><a asp-area="Contact" asp-controller="Contact" asp-action="SendContact">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-lg-3">
+                <div class="header__cart">
+                    <ul>
+                        
+                        <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                        <li><a asp-action="Cart" asp-controller="ViewProduct" asp-area="Product">
+                                <i class="fa fa-shopping-bag"></i> <span>@cart.Count</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="header__cart__price">items: <span>$@total</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="humberger__open">
+            <i class="fa fa-bars"></i>
+        </div>
+    </div>
+</header>

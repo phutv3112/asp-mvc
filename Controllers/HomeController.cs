@@ -31,8 +31,13 @@ public class HomeController : Controller
                                     .AsQueryable();
         posts = posts.OrderByDescending(p => p.DateUpdated).Take(3);
 
+        var categories = _context.CategoryProducts.Include(c => c.CategoryChildren)
+                                                    .Include(c => c.CategoryParent)
+                                                    .Where(c => c.ParentId == null);
+
         ViewBag.products = products;
         ViewBag.posts = posts;
+        ViewBag.categories = categories;
 
         return View();
     }

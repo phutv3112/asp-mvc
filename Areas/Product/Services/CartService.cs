@@ -25,6 +25,16 @@ public class CartService
         }
         return new List<CartItem>();
     }
+    public decimal GetTotalAmount()
+    {
+        List<CartItem> cartItems = GetCartItems();
+        decimal totalAmount = 0;
+        foreach(CartItem item in cartItems)
+        {
+            totalAmount += item.Product.Price * item.quantity;
+        }
+        return totalAmount;
+    }
 
     // Xóa cart khỏi session
     public void ClearCart()

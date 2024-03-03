@@ -8,26 +8,36 @@
     if (level == 0)
     {
         @Html.Raw("<div class=\"categorysidebar\">")
-        <h3><a asp-controller="ViewPost" asp-action="Index" asp-route-categoryslug="">All Categories</a></h3>
+        <h3><a class="text-dark font-weight-bold" asp-controller="ViewPost" asp-action="Index" asp-route-categoryslug="">Categories</a></h3>
     }
     <ul>
         @foreach (var cate in Model.Categories)
         {
             var cssClass = (cate.Slug == Model.categoryslug) ? "active" : null;
-            <li>
-                <a class="@cssClass" asp-controller="ViewPost" asp-asp-action="Index"
+            var ml = level + 1;
+            <li class="d-flex">
+                <a class="@cssClass ml-@ml" asp-area="Blog" asp-controller="ViewPost" asp-action="Index"
                     asp-route-categoryslug="@cate.Slug">@cate.Title</a>
+                <a style="cursor: pointer;padding: 0 10px;" data-toggle="collapse" data-target="#@cate.Slug" aria-expanded="true" aria-controls="@cate.Slug">
+                    @if (cate.CategoryChildren?.Count > 0)
+                    {
+                        <i class="fa fa-angle-double-down"></i>
+                    }
+                    
+                </a>
             </li>
-            @if (cate.CategoryChildren?.Count > 0)
-            {
-                @await Component.InvokeAsync("AppMVC.Components.CategorySidebar",
-                        new CategorySidebar.CategorySidebarData()
-    {
-        Categories = cate.CategoryChildren.ToList(),
-        level = level + 1,
-        categoryslug = ViewBag.categoryslug
-    })
-            }
+            <div id="@cate.Slug" class="collapse show" aria-labelledby="headingOne">
+                @if (cate.CategoryChildren?.Count > 0)
+                {
+                    @await Component.InvokeAsync("AppMVC.Components.CategorySidebar",new CategorySidebar.CategorySidebarData()
+                    {
+                        Categories = cate.CategoryChildren.ToList(),
+                        level = level + 1,
+                        categoryslug = ViewBag.categoryslug
+                    })
+                }
+            </div>
+           
         }
     </ul>
     if (level == 0)

@@ -4,11 +4,12 @@ using AppMVC.Models.Blog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace AppMVC.Areas.Blog.Controllers
 {
     [Area("Blog")]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class ViewPostController : Controller
     {
         private readonly ILogger<ViewPostController> _logger;
@@ -54,7 +55,7 @@ namespace AppMVC.Areas.Blog.Controllers
             }
 
             int totalPost = posts.Count();
-            if (pageSize <= 0) pageSize = 10;
+            if (pageSize <= 0) pageSize = 6;
             int countPage = (int)Math.Ceiling((double)totalPost / pageSize);
 
             if (currentPage > countPage) currentPage = countPage;
@@ -73,6 +74,10 @@ namespace AppMVC.Areas.Blog.Controllers
 
             var postInPage = posts.Skip((currentPage - 1) * pageSize)
                            .Take(pageSize);
+            var recentNews = _context.Posts
+                                   .OrderByDescending(p => p.DateUpdated)
+                                   .Take(3);
+            ViewBag.recentNews = recentNews;
 
             ViewBag.pagingModel = pagingModel;
             ViewBag.totalPost = totalPost;
@@ -102,8 +107,13 @@ namespace AppMVC.Areas.Blog.Controllers
             var otherPosts = _context.Posts.Where(p => p.PostCategories.Any(c => c.Category.Id == category.Id))
                                     .Where(p => p.PostId != post.PostId)
                                     .OrderByDescending(p => p.DateUpdated)
-                                    .Take(5);
+                                    .Take(3);
+            var recentNews = _context.Posts
+                                    .Where(p => p.PostId != post.PostId)
+                                    .OrderByDescending(p => p.DateUpdated)
+                                    .Take(3);
             ViewBag.otherPosts = otherPosts;
+            ViewBag.recentNews = recentNews;
             return View(post);
         }
         private List<Category> GetCategories()

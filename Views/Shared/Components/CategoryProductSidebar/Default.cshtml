@@ -8,27 +8,38 @@
     if (level == 0)
     {
         @Html.Raw("<div class=\"categorysidebar\">")
-        <h3><a asp-controller="ViewProduct" asp-action="Index" asp-route-categoryslug="">Product Categories</a></h3>
+        <h3><a class="text-dark font-weight-bold" asp-controller="ViewProduct" asp-action="Index" asp-route-categoryslug="">Product Categories</a></h3>
     }
     <ul>
         @foreach (var cate in Model.Categories)
         {
             var cssClass = (cate.Slug == Model.categoryslug) ? "active" : null;
-            <li>
-                <a class="@cssClass" asp-controller="ViewProduct" asp-asp-action="Index"
-                    asp-route-categoryslug="@cate.Slug">@cate.Title</a>
+            var ml = level + 1;
+            <li class="d-flex">
+                <a class="@cssClass ml-@ml" asp-area="Product" asp-controller="ViewProduct" asp-action="Index"
+                   asp-route-categoryslug="@cate.Slug">@cate.Title</a>
+                <a style="cursor: pointer;padding: 0 10px;" data-toggle="collapse" data-target="#@cate.Slug" 
+                 aria-expanded="true" aria-controls="@cate.Slug">
+                    @if (cate.CategoryChildren?.Count > 0)
+                    {
+                        <i class="fa fa-angle-double-down"></i>
+                    }
+                </a>
             </li>
-            @if (cate.CategoryChildren?.Count > 0)
-            {
-                @await Component.InvokeAsync("AppMVC.Components.CategoryProductSidebar",
-                        new CategoryProductSidebar.CategorySidebarData()
-    {
-        Categories = cate.CategoryChildren.ToList(),
-        level = level + 1,
-        categoryslug = ViewBag.categoryslug
-    })
-            }
+            <div id="@cate.Slug" class="collapse show" aria-labelledby="headingOne">
+                @if (cate.CategoryChildren?.Count > 0)
+                {
+                   @await Component.InvokeAsync("AppMVC.Components.CategoryProductSidebar", new CategoryProductSidebar.CategorySidebarData()
+                   {
+                       Categories = cate.CategoryChildren.ToList(),
+                       level = level + 1,
+                       categoryslug = ViewBag.categoryslug
+                   })
+                }
+            </div>
+            
         }
+        
     </ul>
     if (level == 0)
     {

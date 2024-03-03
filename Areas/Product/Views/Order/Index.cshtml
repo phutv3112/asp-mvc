@@ -1,0 +1,75 @@
+﻿@model IEnumerable<AppMVC.Models.Order.OrderModel>
+
+@using AppMVC.Menu
+@inject AdminSidebarService _adminSidebarService
+@{
+    ViewData["Title"] = "Order";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h3>List Orders</h3>
+<p>Total Orders: @ViewBag.totalOrders</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Country)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderNote)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Total)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@(++ViewBag.postIndex)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Phone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Country)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNote)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Total)
+                </td>
+                <td>
+                    <a asp-action="Detail" asp-route-id="@item.Id">Detail</a> |
+                    <a class="text-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<partial name="_Paging" model="@ViewBag.pagingModel" />
+@{
+    _adminSidebarService.SetActive("Order", "Index", "Product");
+}
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}

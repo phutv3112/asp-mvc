@@ -26,7 +26,7 @@ namespace AppMVC.Models.Product
 
         [ForeignKey("AuthorId")]
         public AppUser? Author { get; set; }
-
+        public bool Instock { get; set; }
         public List<ProductCategory>? ProductCategories { set; get; }
         public List<ProductPhoto>? Photos { set; get; }
         public DateTime DateCreated { get; set; }

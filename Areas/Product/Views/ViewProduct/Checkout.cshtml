@@ -1,0 +1,119 @@
+﻿@model AppMVC.Areas.Product.Models.CreateOrderModel
+@using Microsoft.AspNetCore.Identity
+@using AppMVC.Models
+
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+@{
+    ViewData["Title"] = "Checkout";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var cartItems = ViewBag.cartItems;
+    var userInfo = await UserManager.GetUserAsync(User);
+}
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/UserAssets/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Checkout</h2>
+                    <div class="breadcrumb__option">
+                        <a href="~/">Home</a>
+                        <span>Checkout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+<!-- Checkout Section Begin -->
+<section class="checkout spad">
+    <div class="container-fluid" style="width:80%">
+        <div class="row">
+            <div class="col-lg-12">
+                <h6>
+                    <span class="icon_tag_alt"></span> Have a coupon? <a asp-action="Cart" asp-controller="ViewProduct"
+                    asp-area="Product">Click here</a> to enter your code
+                </h6>
+            </div>
+        </div>
+        <div class="checkout__form">
+            <h4>Billing Details</h4>
+            <form asp-action="Create" asp-controller="Order" asp-area="Product">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-lg-7 col-md-6">
+                        
+                        <div class="checkout__input">
+                            <p>FullName<span>*</span></p>
+                            <input value="@userInfo.FullName" asp-for="FullName" type="text">
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="checkout__input">
+                            <p>Country<span>*</span></p>
+                            <input value="VietNam" asp-for="Country" type="text">
+                            <span asp-validation-for="Country" class="text-danger"></span>
+                        </div>
+                        <div class="checkout__input">
+                            <p>Address<span>*</span></p>
+                            <input value="@userInfo.HomeAddress" asp-for="Address" type="text">
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                        <div class="checkout__input">
+                            <p>Phone<span>*</span></p>
+                            <input value="@userInfo.PhoneNumber" asp-for="Phone" type="text">
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                       
+                        <div class="checkout__input">
+                            <p>Order notes<span>*</span></p>
+                            <input value="none" type="text" asp-for="OrderNote"
+                                   placeholder="Notes about your order, e.g. special notes for delivery.">
+                            <span asp-validation-for="OrderNote" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-6">
+                        <div class="checkout__order">
+                            <h4>Your Order</h4>
+                            <div class="checkout__order__products">Products <span>Total</span></div>
+                            <ul>
+                                @foreach (var item in cartItems)
+                                {
+                                    <li>@item.Product.Title <span>$@(item.Product.Price*item.quantity)</span></li>
+                                }
+                               
+                            </ul>
+                            <div class="checkout__order__subtotal">Subtotal <span>$@ViewBag.total</span></div>
+                            <div class="checkout__order__total">Total <span>$750.99</span></div>
+                           
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adip elit, sed do eiusmod tempor incididunt
+                                ut labore et dolore magna aliqua.
+                            </p>
+                            <div class="checkout__input__checkbox">
+                                <label for="payment">
+                                    Check Payment
+                                    <input type="checkbox" id="payment">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="checkout__input__checkbox">
+                                <label for="paypal">
+                                    Paypal
+                                    <input type="checkbox" id="paypal">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <button type="submit" class="site-btn">PLACE ORDER</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<!-- Checkout Section End -->
+<partial name="_ValidationScriptsPartial" />
