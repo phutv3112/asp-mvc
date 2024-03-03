@@ -60,7 +60,7 @@
         <div class="row">
             <div class="col-lg-3">
                 <div class="header__logo">
-                    <a asp-controller="Home" asp-action="Index"><img src="~/userassets/img/logo.png" alt=""></a>
+                    <a href="~/"><img src="~/userassets/img/logo.png" alt=""></a>
                 </div>
             </div>
             <div class="col-lg-6">
@@ -68,15 +68,7 @@
                     <ul>
                         <li class="active"><a href="~/">Home</a></li>
                         <li><a asp-controller="ViewProduct" asp-action="Index" asp-area="Product" asp-route-categoryslug="">Shop</a></li>
-                        <li>
-                            <a href="#">Pages</a>
-                            <ul class="header__menu__dropdown">
-                                <li><a href="./shop-details.html">Shop Details</a></li>
-                                <li><a href="./shoping-cart.html">Shoping Cart</a></li>
-                                <li><a href="./checkout.html">Check Out</a></li>
-                                <li><a href="./blog-details.html">Blog Details</a></li>
-                            </ul>
-                        </li>
+                        
                         <li><a asp-area="Blog" asp-controller="ViewPost" asp-action="Index">Blog</a></li>
                         <li><a asp-area="Contact" asp-controller="Contact" asp-action="SendContact">Contact</a></li>
                     </ul>

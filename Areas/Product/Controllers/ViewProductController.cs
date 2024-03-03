@@ -135,8 +135,11 @@ namespace AppMVC.Areas.Product.Controllers
                                             .ToList();
             return categories;
         }
-        [Route("addcart/{productid:int}", Name = "addcart")]
-        public IActionResult AddToCart([FromRoute] int productid)
+
+        //[Route("addcart/{productid:int}", Name = "addcart")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult AddToCartApi(int productid)
         {
 
             var product = _context.Products
@@ -163,7 +166,38 @@ namespace AppMVC.Areas.Product.Controllers
             _cartService.SaveCartSession(cart);
             // Chuyển đến trang hiện thị Cart
             //return RedirectToAction(nameof(Cart));
-            return RedirectToAction("Index");
+            return Json(new { success = true });
+        }
+
+        [Route("addcart/{productid:int}", Name = "addcart")]
+        public IActionResult AddToCart(int productid)
+        {
+
+            var product = _context.Products
+                .Where(p => p.ProductId == productid)
+                .FirstOrDefault();
+            if (product == null)
+                return NotFound("Product Not Found");
+
+            // Xử lý đưa vào Cart ...
+            var cart = _cartService.GetCartItems();
+            var cartitem = cart.Find(p => p.Product.ProductId == productid);
+            if (cartitem != null)
+            {
+                // Đã tồn tại, tăng thêm 1
+                cartitem.quantity++;
+            }
+            else
+            {
+                //  Thêm mới
+                cart.Add(new CartItem() { quantity = 1, Product = product });
+            }
+            string productSlug = product.Slug;
+            // Lưu cart vào Session
+            _cartService.SaveCartSession(cart);
+            // Chuyển đến trang hiện thị Cart
+            //return RedirectToAction(nameof(Cart));
+            return RedirectToAction("Detail", new {productslug = productSlug });
         }
         [Route("/updatecart", Name = "updatecart")]
         [HttpPost]

@@ -23,7 +23,7 @@ public class HomeController : Controller
                                     .Include(p => p.ProductCategories)
                                     .ThenInclude(p => p.Category)
                                     .AsQueryable();
-        products = products.OrderByDescending(p => p.DateUpdated).Take(4);
+        products = products.OrderByDescending(p => p.DateUpdated).Take(8);
 
         var posts = _context.Posts.Include(p => p.Author)
                                     .Include(p => p.PostCategories)

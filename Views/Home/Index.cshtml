@@ -70,7 +70,7 @@
                 <div class="section-title">
                     <h2>Featured Product</h2>
                 </div>
-                <div class="featured__controls">
+                @* <div class="featured__controls">
                     <ul>
                         <li class="active" data-filter="*">All</li>
                         <li data-filter=".oranges">Oranges</li>
@@ -78,7 +78,7 @@
                         <li data-filter=".vegetables">Vegetables</li>
                         <li data-filter=".fastfood">Fastfood</li>
                     </ul>
-                </div>
+                </div> *@
             </div>
         </div>
         <div class="row featured__filter">
@@ -90,14 +90,19 @@
                 {
                     srcImg = $"/contents/Products/{product.Photos.FirstOrDefault().FileName}";
                 }
-                <div style="cursor:pointer" onclick="window.location.href='@actionUrl'" class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat">
+                @* style = "cursor:pointer" onclick = "window.location.href='@actionUrl'" *@
+                <div  class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat">
                     <div class="featured__item">
                         <div class="featured__item__pic set-bg" data-setbg=@srcImg>
                             <ul class="featured__item__pic__hover">
                                 <li><a href="#"><i class="fa fa-heart"></i></a></li>
                                 <li>
-                                    <a asp-area="Product" asp-action="AddToCart" asp-controller="ViewProduct" asp-route-productid="@product.ProductId">
-                                        <i class="fa fa-shopping-cart"></i></a>
+                                    @* <a asp-area="Product" asp-action="AddToCart" asp-controller="ViewProduct"
+                                       asp-route-productid="@product.ProductId">
+                                        <i class="fa fa-shopping-cart"></i></a> *@
+                                    <a style="cursor:pointer;" onclick="AddToCart()" id="addToCart" data-id="@product.ProductId">
+                                        <i class="fa fa-shopping-cart"></i>
+                                    </a>
                                 </li>
                             </ul>
                         </div>
@@ -393,3 +398,33 @@
     </div>
 </section>
 <!-- Blog Section End -->
+
+@section Scripts {
+    <script>
+       
+        function AddToCart() {
+            $(document).ready(function () {
+                    var box = $("#addToCart");
+                    var productId = box.data("id");
+
+                    var formData = new FormData();
+                formData.append("productid", productId);
+
+                    var urlCart = "@Url.Action("AddToCartApi","ViewProduct", new{area="Product"})";
+                $.ajax({
+                                data: formData,
+                                cache: false,
+                                url: urlCart,
+                                type: "POST",
+                                contentType: false,
+                                processData: false,
+                                success: function (data) {
+                                    alert("Add product to cart Success");
+                                }
+                            })
+                
+            });
+        }
+       
+    </script>
+}
