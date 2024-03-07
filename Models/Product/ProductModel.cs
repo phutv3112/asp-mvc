@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
@@ -22,6 +23,9 @@ namespace AppMVC.Models.Product
         public bool Published { get; set; }
         [Range(0, int.MaxValue)]
         public decimal Price { get; set; }
+        [Range(0, int.MaxValue)]
+        [DefaultValue(0)]
+        public int? DiscountPercent { get; set; }
         public string? AuthorId { get; set; }
 
         [ForeignKey("AuthorId")]

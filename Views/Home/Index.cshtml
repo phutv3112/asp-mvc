@@ -4,6 +4,24 @@
     ViewData["Title"] = "Home Page";
     var products = ViewBag.products as IQueryable<ProductModel>;
     var posts = ViewBag.posts as IQueryable<Post>;
+    IQueryable<ProductModel> lastestProducts = ViewBag.lastestProducts as IQueryable<ProductModel>;
+    IQueryable<ProductModel> productSales = ViewBag.productSales as IQueryable<ProductModel>;
+    List<ProductModel> owl1 = new List<ProductModel>();
+    List<ProductModel> owl2 = new List<ProductModel>();
+    int count = 0;
+    foreach (var p in lastestProducts)
+    {
+        if (count < 3)
+        {
+            owl1.Add(p);
+            count++;
+        }
+        else if (count >= 3 && count < 6)
+        {
+            owl2.Add(p);
+            count++;
+        }
+    }
 }
 
 @* Banner Section *@
@@ -31,31 +49,7 @@
                         </div>
                     </div>
                 }
-                @* <div class="col-lg-3">
-                    <div class="categories__item set-bg" data-setbg="/userassets/img/categories/cat-1.jpg">
-                        <h5><a href="#">Fresh Fruit</a></h5>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="categories__item set-bg" data-setbg="/userassets/img/categories/cat-2.jpg">
-                        <h5><a href="#">Dried Fruit</a></h5>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="categories__item set-bg" data-setbg="/userassets/img/categories/cat-3.jpg">
-                        <h5><a href="#">Vegetables</a></h5>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="categories__item set-bg" data-setbg="/userassets/img/categories/cat-4.jpg">
-                        <h5><a href="#">drink fruits</a></h5>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="categories__item set-bg" data-setbg="/userassets/img/categories/cat-5.jpg">
-                        <h5><a href="#">drink fruits</a></h5>
-                    </div>
-                </div> *@
+                
             </div>
         </div>
     </div>
@@ -91,48 +85,67 @@
                     srcImg = $"/contents/Products/{product.Photos.FirstOrDefault().FileName}";
                 }
                 @* style = "cursor:pointer" onclick = "window.location.href='@actionUrl'" *@
-                <div  class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat">
-                    <div class="featured__item">
-                        <div class="featured__item__pic set-bg" data-setbg=@srcImg>
-                            <ul class="featured__item__pic__hover">
-                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                <li>
-                                    @* <a asp-area="Product" asp-action="AddToCart" asp-controller="ViewProduct"
-                                       asp-route-productid="@product.ProductId">
-                                        <i class="fa fa-shopping-cart"></i></a> *@
-                                    <a style="cursor:pointer;" onclick="AddToCart()" id="addToCart" data-id="@product.ProductId">
-                                        <i class="fa fa-shopping-cart"></i>
+                if(product.DiscountPercent > 0)
+                {
+                    var priceDiscount = product.Price - (product.Price * product.DiscountPercent) / 100;
+                    <div class="col-lg-3">
+                        <div class="product__discount__item">
+                            <div class="product__discount__item__pic set-bg"
+                                 data-setbg=@srcImg>
+                                <div class="product__discount__percent">-@(product.DiscountPercent)%</div>
+                                <ul class="product__item__pic__hover">
+                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                    <li>
+                                        
+                                        <a style="cursor:pointer;" onclick="AddToCart()" id="addToCart" data-id="@product.ProductId">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="product__discount__item__text">
+                                <h5>
+                                    <a asp-area="Product" asp-action="Detail" asp-controller="ViewProduct"
+                                       asp-route-productslug="@product.Slug">
+                                        @product.Title
                                     </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="featured__item__text">
-                            <h6>
-                                <a asp-area="Product" asp-action="Detail" asp-controller="ViewProduct"
-                                   asp-route-productslug="@product.Slug">
-                                @product.Title</a></h6>
-                            <h5>$@product.Price</h5>
+                                </h5>
+                                <div class="product__item__price">$@priceDiscount <span>$@product.Price</span></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-               @*  <div class="card mb-2" style="width: 24%;">
-                    <img src=@srcImg class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Title</h5>
-                        <p class="card-text">@product.Description</p>
-                        <p>
-                            <strong>@product.ProductCategories.FirstOrDefault()?.Category.Title</strong>
-
-                        </p>
-                        <p>Price: @product.Price</p>
-                        <div class="card-body">
-                            <a class="card-link" asp-area="Product" asp-action="Detail" asp-controller="ViewProduct"
-                               asp-route-productslug="@product.Slug">Detail</a>
-                            <a asp-area="Product" asp-action="AddToCart" asp-controller="ViewProduct" asp-route-productid="@product.ProductId"
-                               class="btn btn-sm btn-primary">Add to cart</a>
+                }
+                else
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat">
+                        <div class="featured__item">
+                            <div class="featured__item__pic set-bg" data-setbg=@srcImg>
+                                <ul class="featured__item__pic__hover">
+                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                    <li>
+                                        @* <a asp-area="Product" asp-action="AddToCart" asp-controller="ViewProduct"
+                                asp-route-productid="@product.ProductId">
+                                <i class="fa fa-shopping-cart"></i></a> *@
+                                        <a style="cursor:pointer;" onclick="AddToCart()" id="addToCart" data-id="@product.ProductId">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="featured__item__text">
+                                <h6>
+                                    <a asp-area="Product" asp-action="Detail" asp-controller="ViewProduct"
+                                       asp-route-productslug="@product.Slug">
+                                        @product.Title
+                                    </a>
+                                </h6>
+                                <h5>$@product.Price</h5>
+                            </div>
                         </div>
                     </div>
-                </div> *@
+                }
+                
+               
             }
             
         </div>
@@ -166,63 +179,43 @@
                 <div class="latest-product__text">
                     <h4>Latest Products</h4>
                     <div class="latest-product__slider owl-carousel">
+
                         <div class="latest-prdouct__slider__item">
-                            <a href="#" class="latest-product__item">
-                                <div class="latest-product__item__pic">
-                                    <img src="~/userassets/img/latest-product/lp-1.jpg" alt="">
-                                </div>
-                                <div class="latest-product__item__text">
-                                    <h6>Crab Pool Security</h6>
-                                    <span>$30.00</span>
-                                </div>
-                            </a>
-                            <a href="#" class="latest-product__item">
-                                <div class="latest-product__item__pic">
-                                    <img src="~/userassets/img/latest-product/lp-2.jpg" alt="">
-                                </div>
-                                <div class="latest-product__item__text">
-                                    <h6>Crab Pool Security</h6>
-                                    <span>$30.00</span>
-                                </div>
-                            </a>
-                            <a href="#" class="latest-product__item">
-                                <div class="latest-product__item__pic">
-                                    <img src="~/userassets/img/latest-product/lp-3.jpg" alt="">
-                                </div>
-                                <div class="latest-product__item__text">
-                                    <h6>Crab Pool Security</h6>
-                                    <span>$30.00</span>
-                                </div>
-                            </a>
+                            @{
+                                var srcImage = "~/UserAssets/img/latest-product/lp-1.jpg";
+                            }
+                            @foreach (var p in owl1)
+                            {
+                                srcImage = $"/contents/Products/{p.Photos.FirstOrDefault().FileName}";
+                                <a asp-action="Detail" asp-controller="ViewProduct"
+                                   asp-area="Product" asp-route-productslug="@p.Slug" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img style="width:110px" src=@srcImage alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>@p.Title</h6>
+                                        <span>$@p.Price</span>
+                                    </div>
+                                </a>
+                            }
+
                         </div>
                         <div class="latest-prdouct__slider__item">
-                            <a href="#" class="latest-product__item">
-                                <div class="latest-product__item__pic">
-                                    <img src="~/userassets/img/latest-product/lp-1.jpg" alt="">
-                                </div>
-                                <div class="latest-product__item__text">
-                                    <h6>Crab Pool Security</h6>
-                                    <span>$30.00</span>
-                                </div>
-                            </a>
-                            <a href="#" class="latest-product__item">
-                                <div class="latest-product__item__pic">
-                                    <img src="~/userassets/img/latest-product/lp-2.jpg" alt="">
-                                </div>
-                                <div class="latest-product__item__text">
-                                    <h6>Crab Pool Security</h6>
-                                    <span>$30.00</span>
-                                </div>
-                            </a>
-                            <a href="#" class="latest-product__item">
-                                <div class="latest-product__item__pic">
-                                    <img src="~/userassets/img/latest-product/lp-3.jpg" alt="">
-                                </div>
-                                <div class="latest-product__item__text">
-                                    <h6>Crab Pool Security</h6>
-                                    <span>$30.00</span>
-                                </div>
-                            </a>
+                            @foreach (var p in owl2)
+                            {
+                                srcImage = $"/contents/Products/{p.Photos.FirstOrDefault().FileName}";
+                                <a asp-action="Detail" asp-controller="ViewProduct"
+                                   asp-area="Product" asp-route-productslug="@p.Slug" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img style="width:110px" src=@srcImage alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>@p.Title</h6>
+                                        <span>$@p.Price</span>
+                                    </div>
+                                </a>
+                            }
+
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,7 @@
 @model App.Admin.USer.AddRoleModel
 @{
     ViewData["Title"] = "Add user role";
+   
 }
 
 <h3>Set user role</h3>
@@ -62,4 +63,8 @@
         });
     </script>
     <partial name="_ValidationScriptsPartial" />
+}
+
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
 }

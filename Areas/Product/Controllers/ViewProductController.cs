@@ -31,7 +31,7 @@ namespace AppMVC.Areas.Product.Controllers
 
         // GET: ViewPostController
         [Route("/product/{categoryslug?}", Name = "product")]
-        public ActionResult Index(string categoryslug, [FromQuery(Name = "p")] int currentPage, int pageSize, string option)
+        public ActionResult Index(string categoryslug, [FromQuery(Name = "p")] int currentPage, int pageSize, string option, string? search)
         {
             var categories = GetCategories();
             ViewBag.categories = categories;
@@ -52,7 +52,7 @@ namespace AppMVC.Areas.Product.Controllers
                                     .Include(p => p.ProductCategories)
                                     .ThenInclude(p => p.Category)
                                     .AsQueryable();
-            products.OrderByDescending(p => p.DateUpdated);
+            products = products.OrderByDescending(p => p.DateUpdated);
             if(option =="1")
             {
                 products = products.OrderBy(p => p.Price);
@@ -64,6 +64,10 @@ namespace AppMVC.Areas.Product.Controllers
                 ids.Add(category.Id);
 
                 products = products.Where(p => p.ProductCategories.Where(pc => ids.Contains(pc.CategoryId)).Any());
+            }
+            if (!string.IsNullOrEmpty(search))
+            {
+                products = products.Where(p => p.Title.Contains(search));
             }
 
             int totalProduct = products.Count();
@@ -91,7 +95,12 @@ namespace AppMVC.Areas.Product.Controllers
                         .Include(p=> p.Photos)
                        .OrderByDescending(p => p.DateUpdated)
                        .Take(6);
+            var productSales = products.OrderByDescending(p => p.DiscountPercent)
+                                        .Where(p => p.DiscountPercent > 0)
+                                        .Take(6);
+
             ViewBag.lastestProducts = lastestProducts;
+            ViewBag.productSales = productSales;
 
             ViewBag.pagingModel = pagingModel;
             ViewBag.totalProduct = totalProduct;

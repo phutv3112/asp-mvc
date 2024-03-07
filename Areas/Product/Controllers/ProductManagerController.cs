@@ -102,7 +102,7 @@ namespace AppMVC.Areas.Product.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,Slug,Content,Published,CategoriesIDs, Price")] CreateProductModel product)
+        public async Task<IActionResult> Create([Bind("Title,Description,Slug,Content,Published,CategoriesIDs,DiscountPercent,Price")] CreateProductModel product)
         {
             var categories = await _context.CategoryProducts.ToListAsync();
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Title");
@@ -168,6 +168,7 @@ namespace AppMVC.Areas.Product.Controllers
                 Slug = product.Slug,
                 Published = product.Published,
                 Price = product.Price,
+                DiscountPercent = product.DiscountPercent,
                 CategoriesIDs = product.ProductCategories.Select(pc => pc.CategoryId).ToArray()
             };
             var categories = await _context.CategoryProducts.ToListAsync();
@@ -181,7 +182,7 @@ namespace AppMVC.Areas.Product.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Title,Description,Slug,Content,Published,CategoriesIDs,Price")] CreateProductModel product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Title,Description,Slug,Content,Published,CategoriesIDs,DiscountPercent,Price")] CreateProductModel product)
         {
             if (id != product.ProductId)
             {
@@ -218,6 +219,7 @@ namespace AppMVC.Areas.Product.Controllers
                     productUpdate.Slug = product.Slug;
                     productUpdate.Price = product.Price;
                     productUpdate.DateUpdated = DateTime.Now;
+                    productUpdate.DiscountPercent = product.DiscountPercent;
 
                     //update postcategory
                     if (product.CategoriesIDs == null)

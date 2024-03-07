@@ -2,7 +2,7 @@
 @inject AppDbContext _context;
 @{
     int stt = 1;
-    decimal total = 0;
+    decimal? total = 0;
 }
 <!-- Breadcrumb Section Begin -->
 <section class="breadcrumb-section set-bg" data-setbg="/UserAssets/img/breadcrumb.jpg">
@@ -44,17 +44,26 @@
                             <tbody>
                             @foreach (var cartitem in Model)
                             {
-                                var itemTotal = cartitem.quantity * cartitem.Product.Price;
                                 var srcImg = "/contents/planet/Earth.jpg";
-                                   
-
+                                decimal? priceDiscount = 0;
+                                    decimal? priceAfter = 0;
                                     if(cartitem.Product != null)
                                     {
                                         var id = cartitem.Product.ProductId;
                                         var qr = _context.ProductPhotos.Where(p => p.ProductId == id).FirstOrDefault();
                                         srcImg = $"/contents/Products/{qr.FileName}";
+                                        if(cartitem.Product.DiscountPercent > 0)
+                                        {
+                                            priceDiscount = cartitem.Product.Price - (cartitem.Product.Price * cartitem.Product.DiscountPercent) / 100;
+                                            priceAfter = priceDiscount;
+                                        }
+                                        else
+                                        {
+                                            priceAfter = cartitem.Product.Price;
+                                        }
+
                                     }
-                                    
+                                    var itemTotal = cartitem.quantity * priceAfter;
                                     total += itemTotal;
                                  <tr>
                                         <td>@(stt++)</td>
@@ -63,7 +72,13 @@
                                             <h5>@cartitem.Product.Title</h5>
                                         </td>
                                         <td class="shoping__cart__price">
-                                            $@(cartitem.Product.Price.ToString("n0"))
+                                            @if(priceDiscount > 0)
+                                            {
+                                                <p style="text-decoration:line-through;">$@(cartitem.Product.Price.ToString("n0"))</p>
+                                                <p>$@priceDiscount</p>
+                                            }else{
+                                                <p>$@(cartitem.Product.Price.ToString("n0"))</p>
+                                            }
                                         </td>
                                         <td class="shoping__cart__quantity">
                                             <div class="quantity">
@@ -73,7 +88,7 @@
                                             </div>
                                         </td>
                                         <td class="shoping__cart__total">
-                                            $@(itemTotal.ToString("n0"))
+                                            $@(itemTotal)
                                         </td>
                                         <td class="shoping__cart__item__close">
                                             <a asp-route="removecart" asp-route-productid="@cartitem.Product.ProductId"
@@ -99,11 +114,7 @@
                                 </tr> *@
                             }
                             </tbody>
-                            <tr>
-                                <td colspan="4" class="text-right">SubTotal</td>
-                                <td>$@(total.ToString("n0"))</td>
-                                <td></td>
-                            </tr>
+                            
                         </table>
 
                         @section Scripts {

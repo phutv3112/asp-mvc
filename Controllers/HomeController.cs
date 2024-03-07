@@ -34,7 +34,15 @@ public class HomeController : Controller
         var categories = _context.CategoryProducts.Include(c => c.CategoryChildren)
                                                     .Include(c => c.CategoryParent)
                                                     .Where(c => c.ParentId == null);
+        var lastestProducts = _context.Products
+                        .Include(p => p.Photos)
+                       .OrderByDescending(p => p.DateUpdated)
+                       .Take(6);
+        var productSales = products.OrderByDescending(p => p.DiscountPercent)
+                                    .Where(p => p.DiscountPercent > 0)
+                                    .Take(6);
 
+        ViewBag.lastestProducts = lastestProducts;
         ViewBag.products = products;
         ViewBag.posts = posts;
         ViewBag.categories = categories;

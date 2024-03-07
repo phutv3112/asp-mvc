@@ -43,3 +43,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
+@section Sidebar {
+    @Html.Raw(_adminSidebarService.renderHtml());
+}
