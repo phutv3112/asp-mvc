@@ -1,0 +1,55 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using AppMVC.Areas.Identity
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+@inject CartService _cartService;
+
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@{
+    var cart = _cartService.GetCartItems();
+    decimal total = 0;
+    foreach(var item in cart)
+    {
+        total += (item.quantity * item.Product.Price);
+    }
+}
+<header class="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="header__logo">
+                    <a href="~/"><img src="~/userassets/img/logo.png" alt=""></a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <nav class="header__menu">
+                    <ul>
+                        <li class="active"><a href="~/">Home</a></li>
+                        <li><a asp-controller="ViewProduct" asp-action="Index" asp-area="Product" asp-route-categoryslug="">Shop</a></li>
+                        
+                        <li><a asp-area="Blog" asp-controller="ViewPost" asp-action="Index">Blog</a></li>
+                        <li><a asp-area="Contact" asp-controller="Contact" asp-action="SendContact">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-lg-3">
+                <div class="header__cart">
+                    <ul>
+                        
+                        <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                        <li><a asp-action="Cart" asp-controller="ViewProduct" asp-area="Product">
+                                <i class="fa fa-shopping-bag"></i> <span>@cart.Count</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="header__cart__price">items: <span>$@total</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="humberger__open">
+            <i class="fa fa-bars"></i>
+        </div>
+    </div>
+</header>

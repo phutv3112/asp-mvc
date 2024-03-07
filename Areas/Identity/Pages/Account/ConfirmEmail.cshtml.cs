@@ -52,7 +52,8 @@ namespace AppMVC.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
-                return RedirectToPage("/Index");
+                //return RedirectToPage("/Index");
+                return RedirectToAction("Index", "Home");
             }
             else
             {
